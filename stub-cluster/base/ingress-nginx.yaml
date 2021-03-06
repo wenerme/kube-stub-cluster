@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ingress-nginx
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: ingress-nginx
+    server: 'https://kubernetes.default.svc'
+  project: default
+  source:
+    path: ingress-nginx
+    repoURL: 'git@gitea-ssh.gitea:dev/dev-cluster'
+    targetRevision: HEAD
+    helm:
+      releaseName: ingress-nginx
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true

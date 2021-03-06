@@ -1,0 +1,25 @@
+{{$_ := .}}
+{{range $job,$probes := .Values.targets}}
+{{range $idx, $probe := $probes}}
+{{if $probe.enabled | default true}}
+---
+{{$name := printf "%s-%s" $job ($probe.name | default (regexReplaceAll "[.:/]" $probe.url "-"))}}
+kind: Probe
+apiVersion: monitoring.coreos.com/v1
+metadata:
+  name: {{$name}}
+  labels:
+    {{- include "prometheus-target.labels" $_ | nindent 4 }}
+spec:
+  jobName: {{$job}}
+  prober:
+    url: {{$probe.url}}
+    path: {{$probe.path | default "/metrics"}}
+  targets:
+    staticConfig:
+      static:
+      - {{$probe.url}}
+{{end}}
+{{end}}
+
+{{end}}

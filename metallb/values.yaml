@@ -1,0 +1,8 @@
+metallb:
+  configInline:
+    address-pools:
+    - name: default
+      protocol: layer2
+      # default address space
+      addresses:
+      - 10.10.128.0/18

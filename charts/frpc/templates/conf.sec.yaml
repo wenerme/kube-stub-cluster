@@ -1,0 +1,11 @@
+{{if not .Values.configSecretName}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "frpc.fullname" . }}-config
+  labels:
+  {{- include "frpc.labels" . | nindent 4 }}
+stringData:
+  frpc.ini: |
+    {{.Values.configInline | nindent 4}}
+{{end}}

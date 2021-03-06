@@ -1,0 +1,6 @@
+targets:
+  node-exporter:
+  - enabled: false
+    url: 192.168.1.1:9100
+    path: /metrics
+    name: local-machine

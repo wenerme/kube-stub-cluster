@@ -1,0 +1,7 @@
+name: kube-prometheus
+apiVersion: v2
+version: 1.0.0
+dependencies:
+- name: kube-prometheus
+  version: 4.0.1
+  repository: https://charts.wener.tech

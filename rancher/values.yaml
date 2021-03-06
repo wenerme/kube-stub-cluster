@@ -1,0 +1,19 @@
+rancher:
+  #
+  hostname: rancher.cluster.example.com
+  systemDefaultRegistry: registry.cn-hangzhou.aliyuncs.com
+  replicas: 2
+  auditLog:
+    # 0 - Disable audit log (default setting).
+    # 1 - Log event metadata.
+    # 2 - Log event metadata and request body.
+    # 3 - Log event metadata, request body, and response body. Each log transaction for a
+    level: 1
+    destination: hostPath
+  ingress:
+    extraAnnotations:
+      kubernetes.io/tls-acme: "true"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    tls:
+      source: secret

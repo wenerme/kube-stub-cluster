@@ -1,0 +1,15 @@
+cert-manager:
+  image:
+    repository: registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-controller
+  webhook:
+    image:
+      repository: registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-webhook
+  cainjector:
+    image:
+      repository: registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-cainjector
+  installCRDs: true
+  ingressShim:
+    defaultIssuerName: letsencrypt
+    defaultIssuerKind: ClusterIssuer
+  extraArgs:
+    - --acme-http01-solver-image=registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-acmesolver:v1.1.0

@@ -1,0 +1,8 @@
+name: ingress-nginx
+dependencies:
+  - name: ingress-nginx
+    version: 3.23.0
+    repository: https://charts.wener.tech
+
+apiVersion: v2
+version: 1.0.0

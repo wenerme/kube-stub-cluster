@@ -1,0 +1,7 @@
+name: metallb
+apiVersion: v2
+version: 1.0.0
+dependencies:
+  - name: metallb
+    version: 2.0.4
+    repository: https://charts.wener.tech

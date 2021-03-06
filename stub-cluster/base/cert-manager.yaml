@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: cert-manager
+    server: 'https://kubernetes.default.svc'
+  project: default
+  source:
+    path: cert-manager
+    repoURL: 'git@gitea-ssh.gitea:dev/dev-cluster'
+    targetRevision: HEAD
+    helm:
+      releaseName: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true

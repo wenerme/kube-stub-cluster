@@ -1,0 +1,29 @@
+kubernetes-dashboard:
+  metricsScraper:
+    enabled: true
+  extraArgs:
+  # - --enable-skip-login
+  # - --enable-insecure-login
+  - --system-banner="运维有风险，操作需谨慎！"
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/tls-acme: 'true'
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        proxy_set_header Accept-Encoding "";
+        sub_filter '<base href="/">' '<base href="/dashboard/">';
+        sub_filter_once on;
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
+    # https://github.com/kubernetes/dashboard/issues/5017#issuecomment-601672968
+    paths:
+    - /dashboard(/|$)(.*)
+    hosts:
+    - cluster.example.com
+    tls:
+    - secretName: kubernetes-dashboard-cert
+      hosts:
+      - cluster.example.com
+  settings:
+    clusterName: wener-cluster
+    itemsPerPage: 50

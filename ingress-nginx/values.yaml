@@ -1,0 +1,26 @@
+ingress-nginx:
+  config:
+    hide-headers: "Server"
+  controller:
+    image:
+      # use mirror
+      # k8s.gcr.io/ingress-nginx/controller
+      repository: registry.cn-hongkong.aliyuncs.com/cmi/ingress-nginx_controller
+      # disable digest
+      digest: ""
+    kind: DaemonSet
+    hostPort:
+      enabled: true
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      prometheusRule:
+        enabled: true
+    admissionWebhooks:
+      patch:
+        image:
+          repository: registry.cn-hongkong.aliyuncs.com/cmi/jettech_kube-webhook-certgen
+    extraArgs:
+      # Allowed SNI routing
+      enable-ssl-passthrough: true

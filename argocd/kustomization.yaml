@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- install.yaml
+
+images:
+- name: ghcr.io/dexidp/dex
+  newName: registry.cn-hongkong.aliyuncs.com/cmi/dexidp_dex
+- name: argoproj/argocd
+  newName: registry.cn-hongkong.aliyuncs.com/cmi/argocd

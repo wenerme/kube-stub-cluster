@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./controller.yaml
+
+images:
+  - name: quay.io/bitnami/sealed-secrets-controller
+    newName: registry.cn-hongkong.aliyuncs.com/cmi/bitnami_sealed-secrets-controller
