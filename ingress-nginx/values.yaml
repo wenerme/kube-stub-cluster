@@ -22,5 +22,5 @@ ingress-nginx:
         image:
           repository: registry.cn-hongkong.aliyuncs.com/cmi/jettech_kube-webhook-certgen
     extraArgs:
-      # Allowed SNI routing
+      # Allowed SNI routing - affect performance
       enable-ssl-passthrough: true

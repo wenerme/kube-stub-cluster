@@ -8,8 +8,11 @@ cert-manager:
     image:
       repository: registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-cainjector
   installCRDs: true
+  # Default issuer
+  # use when
+  # kubernetes.io/tls-acme: "true"
   ingressShim:
     defaultIssuerName: letsencrypt
     defaultIssuerKind: ClusterIssuer
   extraArgs:
-    - --acme-http01-solver-image=registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-acmesolver:v1.1.0
+    - --acme-http01-solver-image=registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-acmesolver:v1.2.0
