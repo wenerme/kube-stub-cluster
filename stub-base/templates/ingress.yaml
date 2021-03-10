@@ -62,9 +62,9 @@ spec:
             name: {{ .serviceName }}
             port:
               name: {{ .portName }}
+        pathType: {{.pathType | default "ImplementationSpecific"}}
         {{- if .path}}
         path: {{ .path }}
-        pathType: {{.pathType | default "ImplementationSpecific"}}
         {{- end}}
 
       {{- end }}
