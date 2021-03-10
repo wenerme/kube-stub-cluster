@@ -1,0 +1,7 @@
+postgres-operator-ui:
+  image:
+    registry: registry.cn-hongkong.aliyuncs.com
+    repository: cmi/acid_postgres-operator-ui
+  envs:
+    targetNamespace: "*"
+    # 目前不支持配置自定义环境变量，Backup 无法查看

@@ -1,0 +1,5 @@
+# 按需
+resources:
+- harbor.yaml
+- postgres-operator.yaml
+- postgres-operator-ui.yaml

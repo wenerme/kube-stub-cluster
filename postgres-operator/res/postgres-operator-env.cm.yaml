@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-operator-env
+  namespace: postgres-operator
+data:
+  # 通过环境变量配置密钥信息
+  AWS_ENDPOINT: https://oss.example.com:443
+  WALE_S3_ENDPOINT: https+path://oss.example.com:443
+  AWS_ACCESS_KEY_ID: key
+  AWS_SECRET_ACCESS_KEY: secret
+  # WALG 对 Minio 支持更好
+  USE_WALG_BACKUP: "true"
+  USE_WALG_RESTORE: "true"
+  CLONE_USE_WALG_RESTORE: "true"
+  AWS_S3_FORCE_PATH_STYLE: 'true'
+  SPILO_S3_BACKUP_BUCKET: bucket
+  SPILO_S3_BACKUP_PREFIX: 'spilo/'

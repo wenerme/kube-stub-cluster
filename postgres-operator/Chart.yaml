@@ -1,0 +1,7 @@
+name: metallb
+apiVersion: v2
+version: 1.0.0
+dependencies:
+  - name: postgres-operator
+    version: 1.6.1
+    repository: https://charts.wener.tech
