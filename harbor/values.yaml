@@ -1,0 +1,41 @@
+harbor:
+  persistence:
+    enabled: false
+    imageChartStorage:
+      # Prefer S3
+      type: s3
+      s3:
+        bucket: harbor
+        regionendpoint: https://oss.example.com
+        encrypt: false
+        accesskey: harbor
+        secretkey: harbor
+  # 修改为一串随机的 16 长度字符
+  secretKey: "not-a-secure-key"
+  database:
+    # 建议使用外部数据库
+    type: external
+    external:
+      host: "postgres"
+      port: "5432"
+      username: "harbor"
+      password: "harbor"
+      coreDatabase: "harbor"
+      notaryServerDatabase: "notary_server"
+      notarySignerDatabase: "notary_signer"
+
+  expose:
+    ingress:
+      annotations:
+        kubernetes.io/tls-acme: "true"
+      hosts:
+        core: registry.example.com
+        notary: notary.example.com
+    tls:
+      # 由 cert-manager 提供证书
+      certSource: secret
+      secret:
+        secretName: harbor-ingress-cert
+        notarySecretName: notary-ingress-cert
+  harborAdminPassword: admin
+  externalURL: https://registry.example.com
