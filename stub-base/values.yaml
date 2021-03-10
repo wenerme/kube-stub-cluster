@@ -1,0 +1,50 @@
+ingresses:
+- name: argo-ingress
+  enabled: true
+  namespace: argo
+  labels: { }
+  annotations:
+  #cert-manager.io/cluster-issuer: letsencrypt
+  #kubernetes.io/tls-acme: "true"
+  #kubernetes.io/ingress.class: nginx
+  hosts:
+  - host: argo.example.com
+    paths:
+    - path: /
+      serviceName: argo-server
+      portName: http
+  tls:
+  - hosts:
+    - argo.example.com
+    secretName: argo-ingress-secret
+  acme:
+    enabled: true
+
+- name: argocd-ingress
+  enabled: true
+  namespace: argocd
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  hosts:
+  - host: argocd.example.com
+    paths:
+    - path: /
+      serviceName: argocd-server
+      portName: https
+  acme:
+    enabled: true
+
+- name: kube-ingress
+  enabled: true
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+  hosts:
+  - host: kube.example.com
+    paths:
+    - serviceName: kubernetes
+      portName: https
+

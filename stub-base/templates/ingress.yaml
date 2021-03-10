@@ -1,0 +1,74 @@
+{{- $root := . -}}
+
+{{- range $index,$ingress := .Values.ingresses -}}
+{{$ingress = $ingress | default (dict)}}
+{{- if $ingress.enabled }}
+{{$name := $ingress.name}}
+{{$_ := set $ingress "acme" ($ingress.acme | default dict)}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{$name}}
+  {{- with $ingress.namespace}}
+  namespace: {{.}}
+  {{- end}}
+  labels:
+    {{- if $root.Chart.AppVersion }}
+    app.kubernetes.io/version: {{ $root.Chart.AppVersion | quote }}
+    {{- end }}
+    app.kubernetes.io/managed-by: {{ $root.Release.Service }}
+    app.kubernetes.io/instance: {{ $root.Release.Name }}
+  {{- with $ingress.labels }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  annotations:
+  {{- with $ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if $ingress.acme.enabled }}
+    kubernetes.io/tls-acme: "true"
+  {{- end }}
+spec:
+  {{- if $ingress.tls }}
+  tls:
+  {{- range $ingress.tls }}
+  - hosts:
+    {{- range .hosts }}
+    - {{ . | quote }}
+    {{- end }}
+    secretName: {{ .secretName | default (printf "%s-cert" $name) }}
+  {{- end }}
+
+  {{- else if $ingress.acme.enabled }}
+  tls:
+  {{- range $ingress.hosts }}
+  - hosts:
+    - {{ .host | quote }}
+    secretName: {{ printf "%s-cert" $name }}
+  {{- end }}
+
+  {{- end }}
+
+  rules:
+  {{- range $ingress.hosts }}
+  - host: {{ .host | quote }}
+    http:
+      paths:
+      {{- range .paths }}
+      - backend:
+          service:
+            name: {{ .serviceName }}
+            port:
+              name: {{ .portName }}
+        {{- if .path}}
+        path: {{ .path }}
+        pathType: {{.pathType | default "ImplementationSpecific"}}
+        {{- end}}
+
+      {{- end }}
+  {{- end }}
+
+{{- end -}}
+{{- end -}}
