@@ -1,0 +1,7 @@
+name: kubed
+apiVersion: v2
+version: 1.0.0
+dependencies:
+- name: kubed
+  version: v0.12.0
+  repository: https://charts.wener.tech

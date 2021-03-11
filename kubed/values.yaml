@@ -1,0 +1,4 @@
+kubed:
+  enableAnalytics: false
+  config:
+    clusterName: default

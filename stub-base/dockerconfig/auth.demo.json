@@ -1,0 +1,15 @@
+[
+  {
+    "server": "docker.io",
+    "username": "username",
+    "password": "password"
+  },
+  {
+    "server": [
+      "registry.cn-shanghai.aliyuncs.com",
+      "registry.cn-hongkong.aliyuncs.com"
+    ],
+    "username": "aliyun",
+    "password": "aliyun"
+  }
+]

@@ -3,3 +3,4 @@ resources:
 - harbor.yaml
 - postgres-operator.yaml
 - postgres-operator-ui.yaml
+- kubed.yaml
