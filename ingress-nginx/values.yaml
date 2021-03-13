@@ -16,7 +16,7 @@ ingress-nginx:
       serviceMonitor:
         enabled: true
       prometheusRule:
-        enabled: true
+        enabled: false
     admissionWebhooks:
       patch:
         image:

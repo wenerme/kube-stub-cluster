@@ -1,0 +1,16 @@
+ingresses:
+- name: my-ingress
+  enabled: true
+  namespace: argocd
+  labels: { }
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  hosts:
+  - host: my.example.com
+    paths:
+    - serviceName: my-server
+      portName: https
+  tls:
+  - hosts:
+    - my.example.com
+    secretName: wode-co-cert

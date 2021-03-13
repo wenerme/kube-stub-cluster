@@ -5,6 +5,7 @@ endif
 
 
 build: $(wildcard kustomization.yaml) $(wildcard values.yaml)
+	! [ -e build.sh ] || sh ./build.sh
 	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
 	! [ -e Chart.yaml ] || helm template $$(basename $$PWD) --namespace ${NAMESPACE} ./ > build.ignored.yaml
 verify: build
@@ -12,7 +13,6 @@ verify: build
 verify-server: build
 	kubectl -n ${NAMESPACE} apply -f build.ignored.yaml --dry-run=server
 apply: build
-	kubectl create ns ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
 	kubectl -n ${NAMESPACE} apply -f build.ignored.yaml
 
 up:
@@ -23,4 +23,8 @@ up-verify-server: up verify-server
 
 seal:
 	mkdir -p templates
-	ls *.secret.yaml | xargs -n 1 -I {} sh -c 'kubeseal -f {} -o yaml -n ${NAMESPACE} > templates/$$(echo {}|sed "s/.secret./.sealed./")'
+	ls *.secret.yaml | xargs -n 1 -I {} sh -c 'kubeseal -f {} -o yaml -n ${NAMESPACE} > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
+
+clean:
+	rm -rf build.ignored.yaml
+	rm -rf charts
