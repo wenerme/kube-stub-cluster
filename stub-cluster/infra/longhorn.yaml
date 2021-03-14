@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn
+  namespace: argocd
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: longhorn-system
+    server: 'https://kubernetes.default.svc'
+  project: default
+  source:
+    path: longhorn
+    repoURL: 'git@gitea-ssh.gitea:dev/dev-cluster'
+    targetRevision: HEAD
+    helm:
+      releaseName: longhorn
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+    - CreateNamespace=true

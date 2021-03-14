@@ -1,0 +1,20 @@
+oauth2-proxy:
+  envSecretName: oauth2-proxy-env
+  # Keycloak as Provider
+  args:
+  - --provider=keycloak
+  - --email-domain=*
+  - --upstream=file:///dev/null
+  - --http-address=0.0.0.0:4180
+  - --login-url=https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/auth
+  - --redeem-url=https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/token
+  - --validate-url=https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/userinfo
+  - --oidc-issuer-url=https://keycloak.example.com/auth/realms/myrealm
+  - --whitelist-domain=.example.com
+  - --cookie-domain=.example.com
+  - --cookie-name=_auth-kc-admin
+  - --provider-display-name=登陆
+  - --banner=登陆
+  - --footer=@AuthProxy
+  # - --scope=profile
+  - --set-authorization-header=true

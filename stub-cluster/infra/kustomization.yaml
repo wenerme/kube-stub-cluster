@@ -4,3 +4,5 @@ resources:
 - postgres-operator.yaml
 - postgres-operator-ui.yaml
 - kubed.yaml
+- longhorn.yaml
+- oauth2-proxy.yaml

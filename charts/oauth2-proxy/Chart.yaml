@@ -1,0 +1,8 @@
+apiVersion: v2
+name: oauth2-proxy
+description: OAuth2 Proxy
+
+type: application
+
+version: 1.0.0
+appVersion: v7.0.1

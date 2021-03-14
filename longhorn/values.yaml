@@ -1,0 +1,21 @@
+longhorn:
+  # simple local deploy
+  defaultSettings:
+    # 允许同节点多副本
+    replicaSoftAntiAffinity: true
+    # 允许同区域多服务
+    replicaZoneSoftAntiAffinity: true
+    # 尽量与挂载相同节点
+    defaultDataLocality: best-effort
+    # 默认副本为 3 - 可按需设置
+    defaultReplicaCount: 3
+
+    # S3 备份
+    #backupTarget: s3://backupbucket@us-east-1/backupstore
+    #backupTargetCredentialSecret: longhorn-s3-credential
+
+    # 生产选择部分节点部署
+    #taintToleration: key1=value1:NoSchedule; key2:NoExecute
+    # 默认允许 degraded 情况创建 volume
+    # 生产建议关闭
+    # allowVolumeCreationWithDegradedAvailability: true
