@@ -1,0 +1,6 @@
+apiVersion: v2
+name: filebrowser
+description: A Helm chart for filebrowser
+type: application
+version: 1.0.0
+appVersion: v2.13.0

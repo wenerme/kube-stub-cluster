@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "samba.fullname" . }}
+  labels:
+    {{- include "samba.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    # use hostPort
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "samba.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "samba.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "samba.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: ns
+              containerPort: 137
+              protocol: TCP
+              hostPort: 137
+            - name: ns-udp
+              containerPort: 137
+              protocol: UDP
+              hostPort: 137
+            - name: dgm
+              containerPort: 138
+              protocol: UDP
+              hostPort: 138
+            - name: ssn
+              containerPort: 139
+              protocol: TCP
+              hostPort: 139
+            - name: smb
+              containerPort: 445
+              protocol: TCP
+              hostPort: 445
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          volumeMounts:
+          {{- if or .Values.config.smb .Values.config.smbOverride}}
+          - mountPath: /etc/smb/smb.ini
+            name: config
+            subPath: smb.ini
+          {{- end}}
+          {{.Values.persistent.mounts | toYaml | nindent 10}}
+
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Values.configMapName | default (print (include "samba.fullname" .) "-conf")}}
+      {{.Values.persistent.volumes | toYaml | nindent 6}}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

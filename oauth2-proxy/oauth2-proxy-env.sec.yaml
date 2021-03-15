@@ -5,4 +5,6 @@ metadata:
 stringData:
   OAUTH2_PROXY_CLIENT_ID: client-id
   OAUTH2_PROXY_CLIENT_SECRET: secret
-  OAUTH2_PROXY_COOKIE_SECRET: random-uuid
+  # 长度 16,24,32
+  # uuidgen | tr -d '-' | pbcopy
+  OAUTH2_PROXY_COOKIE_SECRET: '0000000000000000'

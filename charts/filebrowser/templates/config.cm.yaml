@@ -1,0 +1,21 @@
+{{- if (not .Values.configMapName) }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "filebrowser.fullname" . }}-conf
+  labels:
+  {{- include "filebrowser.labels" . | nindent 4 }}
+data:
+  .filebrowser.json: |
+    {{- .Values.config | nindent 4 }}
+  init.sh: |
+    {{- .Values.initScript | nindent 4 }}
+  {{- with .Values.setting}}
+  setting.json: |
+    {{- if kindIs "string" .}}
+    {{- . | nindent 4 }}
+    {{else}}
+    {{- . | toPrettyJson | nindent 4 }}
+    {{end}}
+  {{- end}}
+{{- end}}
