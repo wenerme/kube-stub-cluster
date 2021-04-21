@@ -5,7 +5,7 @@ postgres-operator:
   # 自定义了 image 相关配置 - 其他配置与默认相同 - 因为使用了 CRD 要求类型正确，因此需要写
   configTarget: "OperatorConfigurationCRD"
   configGeneral:
-    docker_image: registry.cn-hongkong.aliyuncs.com/cmi/acid_spilo-13:2.0-p4
+    docker_image: registry.cn-hongkong.aliyuncs.com/cmi/acid_spilo-13:2.0-p6
     enable_crd_validation: true
     enable_lazy_spilo_upgrade: false
     enable_pgversion_env_var: true
@@ -19,7 +19,8 @@ postgres-operator:
     workers: 8
 
   configConnectionPooler:
-    connection_pooler_image: registry.cn-hongkong.aliyuncs.com/cmi/acid_pgbouncer:master-14
+    spilo_allow_privilege_escalation: true
+    connection_pooler_image: registry.cn-hongkong.aliyuncs.com/cmi/acid_pgbouncer:master-16
     connection_pooler_max_db_connections: 60
     connection_pooler_number_of_instances: 2
 
@@ -37,11 +38,14 @@ postgres-operator:
     # HELM 3 不需要
     create: false
   configKubernetes:
+    # CRD 必须覆盖定义
+    spilo_allow_privilege_escalation: true
     enable_init_containers: true
     enable_pod_antiaffinity: false
     enable_pod_disruption_budget: true
     enable_sidecars: true
     spilo_privileged: false
+    # 需要 Map
     cluster_labels:
       application: spilo
     # 使用 secret
@@ -63,7 +67,7 @@ postgres-operator:
     log_s3_bucket: "example-log"
     wal_s3_bucket: "example-backup"
   configLogicalBackup:
-    logical_backup_docker_image: registry.cn-hongkong.aliyuncs.com/cmi/acid_logical-backup:v1.6.1
+    logical_backup_docker_image: registry.cn-hongkong.aliyuncs.com/cmi/acid_logical-backup:v1.6.2
     logical_backup_s3_bucket: "example-backup"
     logical_backup_s3_endpoint: "https://oss.example.com"
     logical_backup_s3_region: ""
