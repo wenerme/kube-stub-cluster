@@ -1,5 +1,6 @@
 # 按需
 resources:
+- argocd.yaml
 - harbor.yaml
 - postgres-operator.yaml
 - postgres-operator-ui.yaml
