@@ -5,5 +5,11 @@ resources:
 - ./controller.yaml
 
 images:
-  - name: quay.io/bitnami/sealed-secrets-controller
-    newName: registry.cn-hongkong.aliyuncs.com/cmi/bitnami_sealed-secrets-controller
+- name: quay.io/bitnami/sealed-secrets-controller
+  newName: registry.cn-hongkong.aliyuncs.com/cmi/bitnami_sealed-secrets-controller
+
+patches:
+- target:
+    kind: Deployment
+    name: sealed-secrets-controller
+  path: sealed-secrets-controller.deploy.patch.yaml
