@@ -1,0 +1,9 @@
+nats:
+  nats:
+    # 目前还是 nats 2.1
+    image: nats:2.2-alpine
+    jetstream:
+      enabled: true
+  exporter:
+    serviceMonitor:
+      enabled: true
