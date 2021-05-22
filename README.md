@@ -1,6 +1,11 @@
 # Kubernetes 集群部署模板
 方便学习参考和粘贴复制的集群部署模板。
 
+## Why
+* 尽量的复用部署过的项目校验
+* 尽量的复用写过的 charts 和 values
+* 快速开始使用
+
 ## 特点
 * 使用国内容器镜像 - 部署快稳定
   * 镜像来源于 - [wenerme/container-mirror](https://github.com/wenerme/container-mirror)

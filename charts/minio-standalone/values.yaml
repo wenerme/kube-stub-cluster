@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: minio/mc
+  repository: minio/minio
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
