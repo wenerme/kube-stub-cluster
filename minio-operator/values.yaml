@@ -1,0 +1,65 @@
+minio-operator:
+  operator:
+    nsToWatch: minio-operator
+    clusterDomain: minio.example.com
+  # prevent generate tenants
+  # tenants: [ ]
+  tenants:
+  - name: minio-demo
+    namespace:
+    image:
+      repository: minio/minio
+      tag: RELEASE.2021-04-06T23-11-00Z
+      pullPolicy: IfNotPresent
+    imagePullSecrets: []
+    scheduler: {}
+    pools:
+    - servers: 4 # 1 for standalone mode, 4+ for distributed mode
+      volumesPerServer: 4
+      size: 10Gi
+      storageClassName: standard
+      tolerations: { }
+      nodeSelector: { }
+      affinity: { }
+      resources: { }
+      securityContext: { }
+    mountPath: /export
+    ## Sub path inside Mount path where MinIO stores data.
+    subPath: /data
+    secrets:
+      enabled: true
+      name: minio-demo-secret
+      accessKey: minio-demo-access-key
+      secretKey: minio-demo-secret-key
+    metrics:
+      enabled: true
+      port: 9000
+    certificate:
+      externalCertSecret: { }
+      requestAutoCert: true
+      certConfig: { }
+    # S3 features
+    s3:
+      # access by <bucketname>.minio.default.svc.cluster.local
+      bucketDNS: false
+    # OrderedReady, Parallel
+    podManagementPolicy: Parallel
+    serviceMetadata: { }
+    # environment variables for minjo
+    env: { }
+    priorityClassName: ""
+    # Console for MinIO
+    console:
+      image:
+        repository: minio/console
+        tag: v0.6.8
+        pullPolicy: IfNotPresent
+      replicaCount: 1
+      secrets:
+        enabled: true
+        name: console-secret
+        passphrase: SECRET
+        salt: SECRET
+        accessKey: YOURCONSOLEACCESS
+        secretKey: YOURCONSOLESECRET
+

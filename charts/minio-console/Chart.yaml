@@ -1,0 +1,7 @@
+apiVersion: v2
+name: minio-console
+description: A Helm chart for MinIO console
+
+type: application
+version: 1.0.0
+appVersion: v0.6.8

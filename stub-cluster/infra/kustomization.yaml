@@ -7,3 +7,4 @@ resources:
 - kubed.yaml
 - longhorn.yaml
 - oauth2-proxy.yaml
+- minio-operator.yaml

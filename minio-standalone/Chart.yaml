@@ -1,0 +1,11 @@
+name: minio-standalone
+apiVersion: v2
+version: 1.0.0
+dependencies:
+- name: minio-standalone
+  version: 1.0.0
+  repository: file://../charts/minio-standalone
+- name: minio-console
+  version: 1.0.0
+  repository: file://../charts/minio-console
+  condition: minio-console.enabled

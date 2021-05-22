@@ -1,0 +1,7 @@
+apiVersion: v2
+name: minio-standalone
+description: A Helm chart for MinIO standalone
+
+type: application
+version: 1.0.0
+appVersion: RELEASE.2021-04-06T23-11-00Z

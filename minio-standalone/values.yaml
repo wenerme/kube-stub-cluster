@@ -1,0 +1,41 @@
+minio-standalone:
+  existingEnvSecret: minio-env
+  accessKey:
+  secretKey:
+  # most of time standalone use hostPath
+  volumes:
+  - name: data
+    hostPath:
+      path: /data/minio
+      type: DirectoryOrCreate
+  nodeSelector:
+    # most of time standalone run on specified node
+    kubernetes.io/hostname: stroage-node
+  ingress:
+    enabled: true
+    annotations:
+      # assume using acme
+      cert-manager.io/cluster-issuer: letsencrypt
+      # assume using nginx - increase body
+      nginx.ingress.kubernetes.io/proxy-body-size: 5g
+      nginx.ingress.kubernetes.io/proxy-buffering: "off"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
+      nginx.ingress.kubernetes.io/server-snippet: |
+        ignore_invalid_headers off;
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        chunked_transfer_encoding off;
+    tls:
+    - secretName: minio-ingress-cert
+      hosts:
+      - minio.example.com
+
+minio-console:
+  enabled: true
+  minioServer: http://minio-standalone
+  existingEnvSecret: minio-console-env
+  ingress:
+    enabled: true
+    tls:
+    - secretName: minio-console-ingress-cert
+      hosts:
+      - console.minio.example.com
