@@ -3,7 +3,6 @@ ifneq ("$(wildcard NAMESPACE)","")
 	NAMESPACE := $(shell cat NAMESPACE)
 endif
 
-
 build: $(wildcard kustomization.yaml) $(wildcard values.yaml)
 	! [ -e build.sh ] || sh ./build.sh
 	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
@@ -20,6 +19,7 @@ up:
 	! [ -e update.sh ] || sh ./update.sh
 up-verify: up verify
 up-verify-server: up verify-server
+up-build: up build
 
 seal:
 	mkdir -p templates

@@ -3,7 +3,6 @@ ifneq ("$(wildcard NAMESPACE)","")
 	NAMESPACE := $(shell cat NAMESPACE)
 endif
 
-
 build: $(wildcard kustomization.yaml) $(wildcard values.yaml)
 	! [ -e build.sh ] || sh ./build.sh
 	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
@@ -24,7 +23,7 @@ up-build: up build
 
 seal:
 	mkdir -p templates
-	ls *.secret.yaml | xargs -n 1 -I {} sh -c 'kubeseal -f {} -o yaml -n ${NAMESPACE} > templates/$$(echo {}|sed "s/.secret./.sealed./")'
+	ls *.secret.yaml | xargs -n 1 -I {} sh -c 'kubeseal -f {} -o yaml -n ${NAMESPACE} > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
 
 clean:
 	rm -rf build.ignored.yaml
