@@ -1,7 +1,8 @@
 name: rancher
 apiVersion: v2
 version: 1.0.0
+
 dependencies:
-  - name: rancher
-    version: 2.5.5
-    repository: https://charts.wener.tech
+- name: rancher
+  version: 2.5.8
+  repository: https://charts.wener.tech

@@ -1,4 +1,4 @@
-name: metallb
+name: postgres-operator
 apiVersion: v2
 version: 1.0.0
 dependencies:
