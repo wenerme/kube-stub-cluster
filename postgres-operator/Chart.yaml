@@ -2,6 +2,6 @@ name: postgres-operator
 apiVersion: v2
 version: 1.0.0
 dependencies:
-  - name: postgres-operator
-    version: 1.6.2
-    repository: https://charts.wener.tech
+- name: postgres-operator
+  version: 1.6.2
+  repository: https://charts.wener.tech

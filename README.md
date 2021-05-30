@@ -1,12 +1,15 @@
 # Kubernetes 集群部署模板
+
 方便学习参考和粘贴复制的集群部署模板。
 
 ## Why
+
 * 尽量的复用部署过的项目校验
 * 尽量的复用写过的 charts 和 values
 * 快速开始使用
 
 ## 特点
+
 * 使用国内容器镜像 - 部署快稳定
   * 镜像来源于 - [wenerme/container-mirror](https://github.com/wenerme/container-mirror)
   * 预先拉好的镜像而不是按需拉
@@ -19,6 +22,7 @@
 > 部分 docker.io 镜像尚未映射
 
 ## 如何修改为自行使用
+
 * 粘贴复制 stub-cluster 为 `<你的名字>-cluster`
 * 项目内搜索 example.com 修改为你的域名
 * 项目内搜索 stub - 按需修改
@@ -26,14 +30,19 @@
 ## 部署步骤
 
 1. /argocd
-  * 首先部署 argocd - 其他内容通过 ArgoCD 来部署
-  * `make apply`
+
+* 首先部署 argocd - 其他内容通过 ArgoCD 来部署
+* `make apply`
+
 2. /stub-cluster/stub-cluster
-  * 配置 git 仓库
-  * 部署 argocd 的 stub-cluster 应用 - 部署 stub-cluster
+
+* 配置 git 仓库
+* 部署 argocd 的 stub-cluster 应用 - 部署 stub-cluster
+
 3. 其他内容将按照 stub-cluster 定义的进行部署
 
 ## 部署技巧
+
 * 大部分应用下包含 Makefile
   * 包含升级、验证 等 - 可直接在命令行或者 IDE 操作
 

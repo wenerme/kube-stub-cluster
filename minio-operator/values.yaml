@@ -11,8 +11,8 @@ minio-operator:
       repository: minio/minio
       tag: RELEASE.2021-04-06T23-11-00Z
       pullPolicy: IfNotPresent
-    imagePullSecrets: []
-    scheduler: {}
+    imagePullSecrets: [ ]
+    scheduler: { }
     pools:
     - servers: 4 # 1 for standalone mode, 4+ for distributed mode
       volumesPerServer: 4
