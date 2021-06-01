@@ -24,6 +24,7 @@ up-build: up build
 seal:
 	mkdir -p templates
 	ls *.secret.yaml | xargs -n 1 -I {} sh -c 'kubeseal -f {} -o yaml -n ${NAMESPACE} > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
+	git add templates/*.sealed.yaml
 
 clean:
 	rm -rf build.ignored.yaml

@@ -1,0 +1,28 @@
+wiki:
+  image:
+    tag: 2.5.201
+  serviceAccount:
+    create: false
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+    - host: wiki.example.com
+      paths: [ / ]
+    tls:
+    - secretName: wikijs-tls
+      hosts:
+      - wiki.example.com
+
+  postgresql:
+    enabled: false
+
+    postgresqlHost: wikijs.postgres
+    postgresqlPort: '5432'
+    postgresqlDatabase: wikijs
+    postgresqlUser: wikijs
+
+    # password secret
+    existingSecret: wikijs-postgresql-pass
+    existingSecretKey: postgresql-password
