@@ -11,3 +11,8 @@ images:
   newName: registry.cn-hongkong.aliyuncs.com/cmi/argoproj_argocd
 - name: quay.io/argoproj/argocd
   newName: registry.cn-hongkong.aliyuncs.com/cmi/argoproj_argocd
+
+#patches:
+#- target:
+#    name: argocd-cm
+#  path: templates/argocd-cm.yaml

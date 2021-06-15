@@ -25,10 +25,15 @@ postgres-operator:
     connection_pooler_number_of_instances: 2
 
   configTeamsApi:
+    enable_admin_role_for_users: true
     enable_postgres_team_crd: true
+    enable_postgres_team_crd_superusers: false
+    enable_team_member_deprecation: false
     enable_team_superuser: false
     enable_teams_api: false
     pam_role_name: zalandos
+    postgres_superuser_teams:
+    - postgres_superusers
     protected_role_names:
     - admin
     team_admin_role: admin
@@ -53,8 +58,8 @@ postgres-operator:
     pod_environment_configmap: postgres-operator/postgres-operator-env
     # v1.6.1 FIX
     # https://github.com/zalando/postgres-operator/issues/1377
-    additional_pod_capabilities:
-    - SYS_NICE
+    #additional_pod_capabilities:
+    #- SYS_NICE
   configDebug:
     debug_logging: true
     enable_database_access: true
