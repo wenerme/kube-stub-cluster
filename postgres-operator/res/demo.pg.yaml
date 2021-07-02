@@ -1,0 +1,34 @@
+kind: postgresql
+apiVersion: acid.zalan.do/v1
+metadata:
+  name: "sparkle-demo-system"
+  namespace: "demo-system"
+  labels:
+    team: sparkle
+spec:
+  teamId: "demo"
+  postgresql:
+    version: "13"
+  numberOfInstances: 1
+  volume:
+    size: "10Gi"
+  users:
+    demo:
+    - SUPERUSER
+    # extra user
+    keycloak: [ ]
+  databases:
+    keycloak: keycloak
+
+  allowedSourceRanges: [ ]
+  enableMasterLoadBalancer: false
+  enableReplicaLoadBalancer: false
+  enableConnectionPooler: false
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1000Mi
+    limits:
+      cpu: 500m
+      memory: 2000Mi

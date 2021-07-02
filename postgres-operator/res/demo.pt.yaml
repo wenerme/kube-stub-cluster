@@ -1,0 +1,14 @@
+apiVersion: acid.zalan.do/v1
+kind: PostgresTeam
+metadata:
+  name: demo
+  namespace: demo-system
+spec:
+  additionalSuperuserTeams:
+    demo:
+    - "demo"
+  additionalTeams:
+    demo: []
+  additionalMembers:
+    demo:
+    - "demo-id"

@@ -4,13 +4,16 @@ metadata:
   name: argocd-cm
   namespace: argocd
   labels:
+    app.kubernetes.io/argocd-instance: argocd
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
 data:
-  # customized instance label
-  # application.instanceLabelKey: app.kubernetes.io/argocd-instance
+  # customized instance label - prevent conflict with helm release
+  application.instanceLabelKey: app.kubernetes.io/argocd-instance
   ga.trackingid: ''
   repositories: |
+    - name: kube-stub-cluster
+      url: https://github.com/wenerme/kube-stub-cluster.git
 
 # username+password
 #    - passwordSecret:

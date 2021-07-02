@@ -7,6 +7,8 @@ wiki:
     enabled: true
     annotations:
       kubernetes.io/tls-acme: "true"
+      # wikijs allowed upload file
+      nginx.ingress.kubernetes.io/proxy-body-size: 50m
     hosts:
     - host: wiki.example.com
       paths: [ / ]
