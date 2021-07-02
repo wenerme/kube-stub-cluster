@@ -1,0 +1,9 @@
+apiVersion: v2
+name: sparkle-stack
+type: application
+version: 1.0.0
+
+dependencies:
+- name: keycloak
+  version: 14.0.0
+  repository: https://charts.wener.tech/wener

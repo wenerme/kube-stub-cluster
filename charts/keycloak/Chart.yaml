@@ -4,5 +4,5 @@ description: Keycloak chart
 
 type: application
 
-version: 13.0.1
-appVersion: "13.0.1"
+version: 14.0.0
+appVersion: "14.0.0"
