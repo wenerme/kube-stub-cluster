@@ -1,4 +1,4 @@
-REPO=sparkle
+REPO=wener
 
 publish:
 	mkdir -p charts

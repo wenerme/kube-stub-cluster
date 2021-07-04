@@ -31,3 +31,15 @@ keycloak:
       secretKeyRef:
         name: keycloak.demo-demo-system.credentials.postgresql.acid.zalan.do
         key: password
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    hosts:
+    - host: kc.example.com
+      paths:
+      - path: /
+    tls:
+    - hosts:
+      - kc.example.com
+      secretName: keycloak-cert

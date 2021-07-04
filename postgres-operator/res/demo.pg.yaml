@@ -1,10 +1,10 @@
 kind: postgresql
 apiVersion: acid.zalan.do/v1
 metadata:
-  name: "sparkle-demo-system"
+  name: "demo-demo-system"
   namespace: "demo-system"
   labels:
-    team: sparkle
+    team: demo
 spec:
   teamId: "demo"
   postgresql:

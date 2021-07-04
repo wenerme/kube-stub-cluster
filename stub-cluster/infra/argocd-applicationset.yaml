@@ -1,28 +1,21 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nats
+  name: argocd-applicationset
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: nats
+    namespace: argocd
     server: 'https://kubernetes.default.svc'
   project: default
   source:
-    path: nats
-    repoURL: 'git@gitea-ssh.gitea:dev/dev-cluster'
+    path: argocd-applicationset
+    repoURL: 'https://gitlab.com/inccloud/infra/inccloud-cluster.git'
     targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
     syncOptions:
     - CreateNamespace=true
-  # nats use pod to setup
-  ignoreDifferences:
-  - kind: Pod
-    name: stack-nats-box
-    jsonPointers:
-    - /spec/volumes
-    - /spec/containers/0/volumeMounts

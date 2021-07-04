@@ -1,9 +1,26 @@
 nats:
   nats:
-    # 目前还是 nats 2.1
-    image: nats:2.2-alpine
     jetstream:
       enabled: true
+      fileStorage:
+        # bases on usecase
+        enabled: false
   exporter:
     serviceMonitor:
       enabled: true
+  mqtt:
+    enabled: true
+  websocket:
+    enabled: true
+    noTLS: true
+  appProtocol:
+    # kubernetes >= 1.18
+    enabled: true
+
+  cluster:
+    # bases on usecase
+    enabled: false
+
+  auth:
+    # bases on usecase
+    enabled: false
