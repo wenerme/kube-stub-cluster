@@ -61,3 +61,8 @@ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut
 # 部署时观察集群状态
 kubectl get events -w --all-namespaces
 ```
+
+## Release Watch
+
+- ![](https://img.shields.io/github/v/release/keycloak/keycloak?label=Keycloak)
+- ![](https://img.shields.io/github/v/release/oauth2-proxy/oauth2-proxy?label=oauth2-proxy)
