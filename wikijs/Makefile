@@ -14,9 +14,17 @@ verify-server: build
 apply: build
 	kubectl -n ${NAMESPACE} apply -f build.ignored.yaml
 
-up:
+up: $(wildcard Chart.yaml) $(wildcard update.sh)
 	! [ -e Chart.yaml ] || helm dep up .
 	! [ -e update.sh ] || sh ./update.sh
+
+# from ide click to run
+up-verify: up verify
+up-verify-server: up verify-server
+up-build: up build
+
+charts: $(wildcard Chart.yaml)
+	! [ -e Chart.yaml ] || helm dep up .
 
 seal:
 	mkdir -p templates

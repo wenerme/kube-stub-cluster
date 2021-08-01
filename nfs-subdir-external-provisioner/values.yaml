@@ -1,0 +1,10 @@
+nfs-subdir-external-provisioner:
+  image:
+    repository: registry.cn-hongkong.aliyuncs.com/cmi/sig-storage_nfs-subdir-external-provisioner
+  nfs:
+    # use your nfs server
+    server: 10.10.1.1
+    path: /data/pvs
+    # mountOptions: nfsvers=4 vers=4
+  storageClass:
+    name: nfs-remote
