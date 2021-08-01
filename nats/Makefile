@@ -17,9 +17,6 @@ apply: build
 up:
 	! [ -e Chart.yaml ] || helm dep up .
 	! [ -e update.sh ] || sh ./update.sh
-up-verify: up verify
-up-verify-server: up verify-server
-up-build: up build
 
 seal:
 	mkdir -p templates
