@@ -1,0 +1,23 @@
+gitlab-runner:
+  runners:
+    name: k8s-runner
+    tags: "kubernetes"
+    runUntagged: true
+    protected: false
+    # secret for runner-registration-token, runner-token
+    # secret: gitlab-runner
+    config: |
+      [[runners]]
+        [runners.kubernetes]
+          image = "wener/base"
+  gitlabUrl: https://gitlab.com/
+  runnerRegistrationToken: ""
+
+  concurrent: 10
+  checkInterval: 30
+
+  # use existing runner token
+  #runnerToken: ""
+  # Unregister all runners before termination
+  unregisterRunners: true
+  terminationGracePeriodSeconds: 3600

@@ -1,0 +1,8 @@
+name: gitlab-runner
+apiVersion: v2
+version: 1.0.0
+
+dependencies:
+- name: gitlab-runner
+  version: 0.31.0
+  repository: https://charts.wener.tech
