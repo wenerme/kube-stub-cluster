@@ -1,0 +1,46 @@
+athens-proxy:
+  storage:
+    # default to disk
+    type: disk
+    minio:
+      endpoint:
+      bucket:
+      # use configEnvVars to pass accessKey secretKey
+
+  # support ref secret
+  configEnvVars:
+#  - name: ATHENS_MINIO_ACCESS_KEY_ID
+#    valueFrom:
+#      secretKeyRef:
+#        name: athens-secret
+#        key: minioAccessKey
+#  - name: ATHENS_MINIO_SECRET_ACCESS_KEY
+#    valueFrom:
+#      secretKeyRef:
+#        name: athens-secret
+#        key: minioSecretKey
+
+  # athens recommend using download mode file
+  # cat download-mode.hcl | openssl base64 | tr -d '\n' | pbcopy
+#  - name: ATHENS_DOWNLOAD_MODE
+#    value: custom:BASE64
+
+  upstreamProxy:
+    enabled: true
+    url: "https://goproxy.io"
+
+  jaeger:
+    enabled: false
+    # enabled & set the url
+    url:
+
+  ingress:
+    enabled: false
+    hosts:
+    - go.example.com
+    annotations:
+      kubernetes.io/tls-acme: "true"
+    tls:
+    - hosts:
+      - go.example.com
+      secretName: athens-proxy-cert

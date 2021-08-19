@@ -5,19 +5,21 @@ gitlab-runner:
     runUntagged: true
     protected: false
     # secret for runner-registration-token, runner-token
-    # secret: gitlab-runner
+    secret: gitlab-runner
     config: |
       [[runners]]
         [runners.kubernetes]
+          namespace = "{{.Release.Namespace}}"
           image = "wener/base"
+
   gitlabUrl: https://gitlab.com/
-  runnerRegistrationToken: ""
+  # inline token - prefer runners.secret
+  #runnerToken: ""
+  #runnerRegistrationToken: ""
 
   concurrent: 10
   checkInterval: 30
 
-  # use existing runner token
-  #runnerToken: ""
   # Unregister all runners before termination
   unregisterRunners: true
   terminationGracePeriodSeconds: 3600
