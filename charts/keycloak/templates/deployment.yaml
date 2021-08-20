@@ -38,8 +38,13 @@ spec:
           - secretRef:
               name: {{.}}
           {{end}}
-          {{with .Values.envs}}
           env:
+          # https://github.com/codecentric/helm-charts/issues/149
+          - name: JGROUPS_DISCOVERY_PROTOCOL
+            value: kubernetes.KUBE_PING
+          - name: JGROUPS_DISCOVERY_PROPERTIES
+            value: dump_requests=true,port_range=0,namespace={{.Release.Namespace}}
+          {{with .Values.envs}}
           {{- toYaml . | nindent 12 }}
           {{end}}
           ports:
