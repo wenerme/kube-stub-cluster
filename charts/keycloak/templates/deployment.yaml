@@ -45,7 +45,7 @@ spec:
           - name: JGROUPS_DISCOVERY_PROPERTIES
             value: dump_requests=true,port_range=0,namespace={{.Release.Namespace}}
           {{with .Values.envs}}
-          {{- toYaml . | nindent 12 }}
+          {{- toYaml . | nindent 10 }}
           {{end}}
           ports:
             - name: http
