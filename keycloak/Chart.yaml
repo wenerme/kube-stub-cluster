@@ -5,6 +5,6 @@ version: 1.0.0
 
 dependencies:
 - name: keycloak
-  version: 15.0.1
+  version: 15.0.2
   repository: https://charts.wener.tech/wener
 #  repository: file://../charts/keycloak
