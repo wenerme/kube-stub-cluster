@@ -1,0 +1,11 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: "*"
+spec:
+  destination:
+    server: 'https://kubernetes.default.svc'
+  project: default # customize project
+  source:
+    # controll all repo
+    repoURL: 'https://github.com/wenerme/kube-stub-cluster.git'

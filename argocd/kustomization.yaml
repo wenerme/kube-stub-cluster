@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# kustomize edit add resource templates/*.yaml
 resources:
 - install.yaml
 
@@ -16,3 +17,7 @@ patches:
 - target:
     name: argocd-cm
   path: patches/argocd-cm.yaml
+# unify cluster, project and repo
+#- target:
+#    kind: Application
+#  path: patches/app-proj-repo.yaml

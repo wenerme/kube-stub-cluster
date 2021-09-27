@@ -66,3 +66,10 @@ kubectl get events -w --all-namespaces
 
 - ![](https://img.shields.io/github/v/release/keycloak/keycloak?label=Keycloak)
 - ![](https://img.shields.io/github/v/release/oauth2-proxy/oauth2-proxy?label=oauth2-proxy)
+
+## Requirement
+
+- kubernetes 1.22
+  - 要求 ingress v1
+  - 要求 cert-manager 1.5
+  - 要求 nginx-ingress 1.0
