@@ -1,0 +1,60 @@
+
+cadence:
+  enabled: true
+  server:
+    metrics:
+      serviceMonitor:
+        enabled: true
+    config:
+      numHistoryShards: 1000
+      clusterMetadata:
+        enableGlobalDomain: true
+        maximumClusterCount: 10
+        masterClusterName: "primary"
+        currentClusterName: "primary"
+        clusterInformation:
+        - name: primary
+          enabled: true
+      persistence:
+        default:
+          driver: sql
+          sql:
+            pluginName: postgres
+            host: cadence-cadence
+            port: 5432
+            database: cadence
+            user: cadence
+            password: cadence-password
+            existingSecret: cadence.cadence.credentials.postgresql.acid.zalan.do
+            # for schema
+            connectAttributes:
+              sslmode: require
+            tls:
+              enabled: true
+              sslmode: require
+        visibility:
+          driver: sql
+          sql:
+            pluginName: postgres
+            host: cadence-cadence
+            port: 5432
+            database: cadence_visibility
+            user: cadence
+            password: cadence-password
+            existingSecret: cadence.cadence.credentials.postgresql.acid.zalan.do
+            connectAttributes:
+              sslmode: require
+            tls:
+              enabled: true
+              sslmode: require
+  cassandra:
+    enabled: false
+  mysql:
+    enabled: false
+  # 工具有问题 - 不支持 pg, 不能使用 existingSecret
+  # 本地 schema 迁移完成后再启动
+  schema:
+    setup:
+      enabled: false
+    update:
+      enabled: false

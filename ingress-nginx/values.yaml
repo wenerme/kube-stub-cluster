@@ -20,7 +20,12 @@ ingress-nginx:
     admissionWebhooks:
       patch:
         image:
-          repository: registry.cn-hongkong.aliyuncs.com/cmi/jettech_kube-webhook-certgen
+          repository: registry.cn-hongkong.aliyuncs.com/cmi/ingress-nginx_kube-webhook-certgen
+          digest: ""
     extraArgs:
       # Allowed SNI routing - affect performance
       enable-ssl-passthrough: true
+    # default ingress class
+    watchIngressWithoutClass: true
+    ingressClassResource:
+      default: true

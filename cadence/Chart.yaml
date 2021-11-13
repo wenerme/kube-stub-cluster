@@ -1,0 +1,9 @@
+name: athens-proxy
+apiVersion: v2
+version: 1.0.0
+
+dependencies:
+- name: cadence
+  version: 0.22.1
+  repository: https://kubernetes-charts.banzaicloud.com
+  condition: cadence.enabled
