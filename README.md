@@ -73,3 +73,7 @@ kubectl get events -w --all-namespaces
   - 要求 ingress v1
   - 要求 cert-manager 1.5
   - 要求 nginx-ingress 1.0
+
+## Note
+
+- 升级 ingres-nginx 需要同步 ingress-nginx/kube-webhook-certgen 版本

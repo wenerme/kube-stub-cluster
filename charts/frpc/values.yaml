@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: wener/frp
-  tag: frpc
+  repository: wener/frpc
+  tag:
   pullPolicy: IfNotPresent
 serviceMonitor:
   enable: false

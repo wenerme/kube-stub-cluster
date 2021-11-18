@@ -1,4 +1,3 @@
-
 cadence:
   enabled: true
   server:
@@ -58,3 +57,7 @@ cadence:
       enabled: false
     update:
       enabled: false
+  dynamicConfig:
+    values:
+      frontend.visibilityListMaxQPS:
+      - value: 100

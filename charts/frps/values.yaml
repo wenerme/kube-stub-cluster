@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: wener/frp
-  tag: frps
+  repository: wener/frps
+  tag:
   pullPolicy: IfNotPresent
 serviceMonitor:
   enable: false
