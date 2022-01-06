@@ -4,6 +4,6 @@ version: 1.0.0
 
 dependencies:
 - name: cadence
-  version: 0.22.1
-  repository: https://kubernetes-charts.banzaicloud.com
+  version: 0.23.0
+  repository: https://charts.wener.tech/banzai
   condition: cadence.enabled

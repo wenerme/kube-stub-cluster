@@ -4,5 +4,6 @@ description: OAuth2 Proxy
 
 type: application
 
-version: 1.0.1
-appVersion: v7.1.3
+version: 1.0.2
+appVersion: v7.2.1
+# https://github.com/oauth2-proxy/oauth2-proxy/releases

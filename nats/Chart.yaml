@@ -4,5 +4,5 @@ version: 1.0.0
 
 dependencies:
 - name: nats
-  version: 0.8.4
+  version: 0.10.0
   repository: https://charts.wener.tech

@@ -4,5 +4,5 @@ version: 1.0.0
 
 dependencies:
 - name: rancher
-  version: 2.5.9
+  version: 2.6.3
   repository: https://charts.wener.tech

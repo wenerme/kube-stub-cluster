@@ -3,6 +3,6 @@ name: minio-standalone
 description: A Helm chart for MinIO standalone
 
 type: application
-version: 1.0.1
-appVersion: RELEASE.2021-04-06T23-11-00Z.hotfix.f3cd60697
-
+version: 1.0.2
+appVersion: RELEASE.2022-01-04T07-41-07Z
+# https://github.com/minio/minio/blob/master/helm/minio/Chart.yaml
