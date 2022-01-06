@@ -1,4 +1,11 @@
 metallb:
+  speaker:
+    # prevent evict
+    priorityClassName: system-node-critical
+  prometheus:
+    enabled: true
+    serviceMonitor:
+      enabled: true
   configInline:
     address-pools:
     - name: default
