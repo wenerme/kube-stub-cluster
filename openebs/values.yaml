@@ -1,0 +1,8 @@
+openebs:
+#  localprovisioner:
+#    enabled: false
+#  localpv-provisioner:
+#    enabled: true
+#
+#  zfs-localpv:
+#    enabled: true

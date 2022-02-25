@@ -1,7 +1,9 @@
-name: kubernetes-dashboard
+name: temporal
 apiVersion: v2
 version: 1.0.0
+
 dependencies:
-- name: kubernetes-dashboard
-  version: 5.2.0
+- name: temporal
+  version: 0.14.5
   repository: https://charts.wener.tech
+  condition: temporal.enabled

@@ -1,0 +1,89 @@
+temporal:
+  enabled: true
+  server:
+    enabled: true
+    sidecarContainers:
+    image:
+      repository: temporalio/server
+      tag: 1.14.5
+      pullPolicy: IfNotPresent
+    metrics:
+      # annotation 足矣
+      annotations:
+        enabled: true
+      serviceMonitor:
+        enabled: false
+    # 动态配置内容
+    dynamicConfig:
+    config:
+      logLevel: info
+      numHistoryShards: 1000
+      # 集群元数据配置
+      clusterMetadata:
+        # 以下为默认配置
+        enableGlobalDomain: false
+        failoverVersionIncrement: 10
+        masterClusterName: "active"
+        currentClusterName: "active"
+        clusterInformation:
+          active:
+            enabled: true
+            initialFailoverVersion: 1
+            rpcName: "temporal-frontend"
+            rpcAddress: "127.0.0.1:7933"
+      persistence:
+        # 额外配置
+        additionalStores:
+        default:
+          driver: sql
+          sql:
+            driver: postgres
+            host: temporal-temporal
+            port: 5432
+            database: temporal
+            user: temporal
+            password: temporal-password
+            existingSecret: temporal.temporal.credentials.postgresql.acid.zalan.do
+            secretName:
+            # for schema
+            connectAttributes:
+              search_path: temporal
+        visibility:
+          driver: sql
+          sql:
+            driver: postgres
+            host: temporal-temporal
+            port: 5432
+            database: temporal
+            user: temporal
+            password: temporal-password
+            existingSecret: temporal.temporal.credentials.postgresql.acid.zalan.do
+            secretName:
+            # for schema
+            connectAttributes:
+              search_path: visibility
+  # 不需要
+  admintools:
+    enabled: false
+    image:
+      tag: 1.14.3
+  # 建议自行维护
+  schema:
+    setup:
+      enabled: false
+    update:
+      enabled: false
+
+  # 不建议
+  cassandra:
+    enabled: false
+  mysql:
+    enabled: false
+  postgresql:
+    enabled: false
+  grafana:
+    enabled: false
+  prometheus:
+    enabled: false
+  elasticsearch:
+    enabled: false

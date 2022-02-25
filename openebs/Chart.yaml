@@ -1,7 +1,9 @@
-name: kubernetes-dashboard
 apiVersion: v2
+name: openebs
+type: application
 version: 1.0.0
+
 dependencies:
-- name: kubernetes-dashboard
-  version: 5.2.0
+- name: openebs
+  version: 3.1.0
   repository: https://charts.wener.tech

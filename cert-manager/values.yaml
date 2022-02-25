@@ -15,4 +15,4 @@ cert-manager:
     defaultIssuerName: letsencrypt
     defaultIssuerKind: ClusterIssuer
   extraArgs:
-  - --acme-http01-solver-image=registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-acmesolver:v1.6.1
+  - --acme-http01-solver-image=registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-acmesolver:v1.7.1

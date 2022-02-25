@@ -34,3 +34,6 @@ seal:
 clean:
 	rm -rf build.ignored.yaml
 	rm -rf charts
+
+kustomize-add-templates:
+	kustomize edit add resource templates/*.yaml
