@@ -1,17 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubernetes-dashboard
+  name: cert-manager
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: kubernetes-dashboard
+    namespace: cert-manager
   source:
-    path: kubernetes-dashboard
-    helm:
-      releaseName: kubernetes-dashboard
+    path: cert-manager
   syncPolicy:
     automated:
       prune: true

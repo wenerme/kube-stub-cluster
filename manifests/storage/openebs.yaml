@@ -1,19 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubernetes-dashboard
+  name: openebs
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: kubernetes-dashboard
+    namespace: openebs
   source:
-    path: kubernetes-dashboard
-    helm:
-      releaseName: kubernetes-dashboard
+    path: openebs
   syncPolicy:
     automated:
       prune: true
+      selfHeal: true
     syncOptions:
     - CreateNamespace=true
+    - SkipDryRunOnMissingResource=true

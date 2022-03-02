@@ -8,6 +8,9 @@ cert-manager:
     image:
       repository: registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-cainjector
   installCRDs: true
+  startupapicheck:
+    image:
+      repository: registry.cn-hongkong.aliyuncs.com/cmi/jetstack_cert-manager-ctl
   # Default issuer
   # use when
   # kubernetes.io/tls-acme: "true"

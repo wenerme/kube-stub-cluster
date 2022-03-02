@@ -1,0 +1,9 @@
+apiVersion: v2
+name: victoria-metrics-operator
+type: application
+version: 1.0.0
+
+dependencies:
+- name: victoria-metrics-operator
+  version: 0.8.0
+  repository: https://charts.wener.tech

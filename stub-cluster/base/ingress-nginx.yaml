@@ -8,12 +8,8 @@ metadata:
 spec:
   destination:
     namespace: ingress-nginx
-    server: 'https://kubernetes.default.svc'
-  project: default
   source:
     path: ingress-nginx
-    repoURL: 'git@gitea-ssh.gitea:dev/dev-cluster'
-    targetRevision: HEAD
     helm:
       releaseName: ingress-nginx
   syncPolicy:

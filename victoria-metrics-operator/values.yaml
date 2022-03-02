@@ -1,0 +1,10 @@
+victoria-metrics-operator:
+  operator:
+    # keep prometheus-operator crd
+    disable_prometheus_converter: true
+  admissionWebhooks:
+    enabled: true
+    certManager:
+      enabled: true
+  # https://github.com/VictoriaMetrics/operator/blob/master/vars.MD
+  env: []

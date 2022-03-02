@@ -1,19 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubernetes-dashboard
+  name: manifests
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: kubernetes-dashboard
+    namespace: argocd
+    server: 'https://kubernetes.default.svc'
+  project: default
   source:
-    path: kubernetes-dashboard
-    helm:
-      releaseName: kubernetes-dashboard
+    path: manifests
+    repoURL: 'https://github.com/wenerme/kube-stub-cluster.git'
+    targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
     syncOptions:
     - CreateNamespace=true
+    - SkipDryRunOnMissingResource=true

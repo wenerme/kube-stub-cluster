@@ -1,8 +1,62 @@
 openebs:
-#  localprovisioner:
-#    enabled: false
-#  localpv-provisioner:
-#    enabled: true
-#
-#  zfs-localpv:
-#    enabled: true
+  localprovisioner:
+    enabled: false
+  localpv-provisioner:
+    enabled: true
+    # do not need to provide host block device to pod most of time
+    # sc openebs-device
+    deviceClass:
+      enabled: false
+    # sc openebs-hostpath
+    hostpathClass:
+      enabled: true
+      basePath: /var/openebs/local
+      isDefaultClass: false
+    localpv:
+      enabled: true
+    analytics:
+      enabled: false
+    # already installed
+    openebsNDM:
+      enabled: false
+
+  # k8s.gcr.io/sig-storage/csi-resizer:v1.2.0
+  # k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
+  # k8s.gcr.io/sig-storage/snapshot-controller:v4.0.0
+  # k8s.gcr.io/sig-storage/csi-provisioner:v3.0.0
+  # k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.3.0
+  zfs-localpv:
+    enabled: true
+    zfsNode:
+      # may different based on distribution
+      kubeletDir: /var/lib/kubelet/
+      nodeSelector:
+        # 推荐设置 - 节点不一定支持 zfs
+        # node-role.kubernetes.io/openebs-zfs:
+      driverRegistrar:
+        image:
+          registry: registry-vpc.cn-hongkong.aliyuncs.com/cmi/
+          repository: sig-storage_csi-node-driver-registrar
+    zfsController:
+      resizer:
+        image:
+          registry: registry-vpc.cn-hongkong.aliyuncs.com/cmi/
+          repository: sig-storage_csi-resizer
+      snapshotter:
+        image:
+          registry: registry-vpc.cn-hongkong.aliyuncs.com/cmi/
+          repository: sig-storage_csi-snapshotter
+      snapshotController:
+        image:
+          registry: registry-vpc.cn-hongkong.aliyuncs.com/cmi/
+          repository: sig-storage_snapshot-controller
+      provisioner:
+        image:
+          registry: registry-vpc.cn-hongkong.aliyuncs.com/cmi/
+          repository: sig-storage_csi-provisioner
+    analytics:
+      enabled: false
+  lvm-localpv:
+    enabled: false
+    analytics:
+      enabled: false

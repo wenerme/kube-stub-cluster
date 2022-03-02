@@ -1,3 +1,4 @@
+### BEGIN STUB
 NAMESPACE := $(shell basename $(shell pwd))
 ifneq ("$(wildcard NAMESPACE)","")
 	NAMESPACE := $(shell cat NAMESPACE)
@@ -37,3 +38,4 @@ clean:
 
 kustomize-add-templates:
 	kustomize edit add resource templates/*.yaml
+### END STUB
