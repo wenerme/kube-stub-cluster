@@ -1,0 +1,12 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAuth
+metadata:
+  name: demo
+  namespace: monitoring-system
+  labels:
+    vmauth.victoriametrics.com/instance: demo
+spec:
+  selectAllByDefault: false
+  userSelector:
+    matchLabels:
+      vmauth.victoriametrics.com/instance: demo

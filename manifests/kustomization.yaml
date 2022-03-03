@@ -3,8 +3,11 @@ kind: Kustomization
 
 resources:
 - ./base/sealed-secrets.yaml
+- ./base/kubed.yaml
 - ./base/cert-manager.yaml
 - ./storage/openebs.yaml
+#
+- ./res/repo-kube-stub-cluster.yaml
 
 patches:
 - target:

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-vmauth
+spec:
+  rules:
+  - host: metrics.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: vmauth-demo
+            port:
+              name: http
+        pathType: Prefix
+        path: /
+  - host: metrics.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: vmauth-demo
+            port:
+              name: http
+        pathType: Prefix
+        path: /

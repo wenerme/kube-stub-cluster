@@ -1,0 +1,33 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMCluster
+metadata:
+  name: demo
+  namespace: monitoring-system
+spec:
+  # month
+  retentionPeriod: "12"
+  vmstorage:
+    # depends
+    replicaCount: 1
+    storageDataPath: /vm-data
+    storage:
+      volumeClaimTemplate:
+        spec:
+          # CHANGEME
+          storageClassName: openebs-zfspv
+          resources:
+            requests:
+              storage: 1Ti
+  vmselect:
+    replicaCount: 1
+    cacheMountPath: "/select-cache"
+    storage:
+      volumeClaimTemplate:
+        spec:
+          # CHANGEME
+          storageClassName: openebs-hostpath
+          resources:
+            requests:
+              storage: 2Gi
+  vminsert:
+    replicaCount: 1

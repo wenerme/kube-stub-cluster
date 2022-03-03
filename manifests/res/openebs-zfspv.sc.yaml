@@ -1,0 +1,28 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: openebs-zfspv
+  annotations:
+    storageclass.kubernetes.io/is-default-class: 'true'
+allowVolumeExpansion: true
+# 默认立即
+#volumeBindingMode: WaitForFirstConsumer
+parameters:
+  poolname: "main/zfspv"
+  fstype: "zfs"
+  shared: 'yes'
+provisioner: zfs.csi.openebs.io
+allowedTopologies:
+- matchLabelExpressions:
+  - key: openebs.io/nodeid
+    values:
+    - truth-app-2
+---
+kind: VolumeSnapshotClass
+apiVersion: snapshot.storage.k8s.io/v1beta1
+metadata:
+  name: zfspv-volsnapclass
+  annotations:
+    snapshot.storage.kubernetes.io/is-default-class: "true"
+driver: zfs.csi.openebs.io
+deletionPolicy: Delete

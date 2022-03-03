@@ -1,0 +1,8 @@
+
+users:
+- id:
+  name:
+passwordSecretName: vmusers-secrets
+instanceName: demo
+labels: {}
+

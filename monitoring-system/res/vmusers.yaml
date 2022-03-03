@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-system-vmusers
+  namespace: argocd
+spec:
+  destination:
+    namespace: monitoring-system
+  source:
+    path: monitoring-system/charts/vmusers
+    helm:
+      valueFiles:
+      - values.yaml
+      - ../../vmusers.values.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - SkipDryRunOnMissingResource=true

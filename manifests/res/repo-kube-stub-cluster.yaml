@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    managed-by: argocd.argoproj.io
+  labels:
+    argocd.argoproj.io/secret-type: repository
+  name: repo-kube-stub-cluster
+  namespace: argocd
+stringData:
+  type: git
+  repoURL: 'https://github.com/wenerme/kube-stub-cluster.git'
+  name: kube-stub

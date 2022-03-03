@@ -1,7 +1,0 @@
-resources:
-- metallb.yaml
-- sealed-secrets.yaml
-- cert-manager.yaml
-- ingress-nginx.yaml
-- kube-prometheus.yaml
-- kubernetes-dashboard.yaml

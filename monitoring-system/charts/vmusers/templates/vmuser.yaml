@@ -1,0 +1,28 @@
+{{- range $_,$user := .Values.users}}
+{{$id:=$user.id}}
+{{$name:=$user.name}}
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMUser
+metadata:
+  name: {{$name}}
+  labels:
+    vmauth.victoriametrics.com/instance: {{$.Values.instanceName}}
+    {{- toYaml $.Values.labels | nindent 4}}
+spec:
+  username: {{$name}}
+  passwordRef:
+    name: {{$.Values.passwordSecretName}}
+    key: {{$name}}_password
+  targetRefs:
+  - crd:
+      kind: VMCluster/vmselect
+      name: {{$.Values.instanceName}}
+      namespace: monitoring-system
+    target_path_suffix: /select/{{$id}}
+  - crd:
+      kind: VMCluster/vminsert
+      name: {{$.Values.instanceName}}
+      namespace: monitoring-system
+    target_path_suffix: /insert/{{$id}}
+{{- end}}

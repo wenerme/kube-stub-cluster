@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ./res/demo.vmcluster.yaml
+- ./res/demo.vmauth.yaml
+- ./res/vmauth.ingress.yaml
+- ./res/vmusers.yaml
+
+patches:
+- target:
+    kind: Application
+  path: patch.yaml

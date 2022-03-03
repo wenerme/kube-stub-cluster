@@ -1,0 +1,21 @@
+haproxytech-ingress:
+  controller:
+    # 按需调整
+    ingressClassResource:
+      name: haproxy
+      default: false
+    kind: DaemonSet
+    daemonset:
+      useHostPort: true
+      hostPorts:
+        http: 80
+        https: 443
+        stat: 1024
+
+    extraEnvs:
+    - name: TZ
+      value: Asia/Shanghai
+
+  # k8s.gcr.io/defaultbackend-amd64
+  defaultBackend:
+    enabled: false

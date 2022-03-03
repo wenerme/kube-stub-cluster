@@ -5,8 +5,7 @@ metadata:
 spec:
   destination:
     server: 'https://kubernetes.default.svc'
-  project: default # customize project
+  project: default
   source:
-    # controll all repo
     repoURL: 'https://github.com/wenerme/kube-stub-cluster.git'
     targetRevision: HEAD
