@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-staging
+  name: buypass-staging
 spec:
   acme:
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    server: https://api.test4.buypass.no/acme-v02/directory
     privateKeySecretRef:
-      name: letsencrypt-staging-account
+      name: buypass-staging-account
     solvers:
     - http01:
         ingress: { }

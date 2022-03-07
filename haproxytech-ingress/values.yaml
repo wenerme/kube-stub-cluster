@@ -4,7 +4,12 @@ haproxytech-ingress:
     ingressClassResource:
       name: haproxy
       default: false
+    extraArgs:
+    # default to ingress
+    # - --default-backend-service=ingress-nginx/ingress-nginx-controller
+    # Deployment can rolling update - DaemonSet can reduce routing
     kind: DaemonSet
+    replicaCount: 1
     daemonset:
       useHostPort: true
       hostPorts:
@@ -15,7 +20,12 @@ haproxytech-ingress:
     extraEnvs:
     - name: TZ
       value: Asia/Shanghai
+    config: {}
+      # chain proxy
+      # proxy-protocol: 192.168.1.1
 
   # k8s.gcr.io/defaultbackend-amd64
   defaultBackend:
     enabled: false
+    image:
+      repository: registry.cn-hongkong.aliyuncs.com/cmi/defaultbackend-amd64

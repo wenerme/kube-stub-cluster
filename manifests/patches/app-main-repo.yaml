@@ -7,5 +7,6 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: default
   source:
+    # CHANGEME
     repoURL: 'https://github.com/wenerme/kube-stub-cluster.git'
     targetRevision: HEAD

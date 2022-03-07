@@ -1,0 +1,20 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: zerossl
+spec:
+  acme:
+    # email: example@example.com
+    server: https://acme.zerossl.com/v2/DV90
+    privateKeySecretRef:
+      name: zerossl-account
+    externalAccountBinding:
+      keyAlgorithm: HS256
+      # CHANGEME
+      keyID: XXXXXXXXXXXXXXXXXXXXXX
+      keySecretRef:
+        key: secret
+        name: zerossl-eabsecret
+    solvers:
+    - http01:
+        ingress: { }

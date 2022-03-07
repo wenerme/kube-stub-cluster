@@ -7,9 +7,22 @@ resources:
 - ./base/cert-manager.yaml
 - ./storage/openebs.yaml
 #
+- ./networking/metallb.yaml
+- ./networking/haproxytech-ingress.yaml
+#
 - ./res/repo-kube-stub-cluster.yaml
+#
+- ./res/letsencrypt.ci.yaml
+- ./res/letsencrypt-staging.ci.yaml
+#- ./res/buypass.ci.yaml
+#- ./res/buypass-staging.ci.yaml
+#- ./res/zerossl.ci.yaml
+
 
 patches:
 - target:
     kind: Application
-  path: patch.yaml
+  path: ./patches/app-main-repo.yaml
+- target:
+    kind: ClusterIssuer
+  path: ./patches/cluster-issuer-acme-email.yaml
