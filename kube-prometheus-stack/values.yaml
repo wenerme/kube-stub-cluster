@@ -1,0 +1,11 @@
+kube-prometheus-stack:
+  grafana:
+    enabled: false
+  prometheusOperator:
+    admissionWebhooks:
+      patch:
+        image:
+          repository: registry.cn-hongkong.aliyuncs.com/cmi/ingress-nginx_kube-webhook-certgen
+  kube-state-metrics:
+    image:
+      repository: registry.cn-hongkong.aliyuncs.com/cmi/kube-state-metrics_kube-state-metrics

@@ -1,0 +1,6 @@
+opensearch-dashboards:
+  image:
+    repository: "opensearchproject/opensearch-dashboards"
+  config: { }
+  ingress:
+    enabled: false

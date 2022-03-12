@@ -1,0 +1,9 @@
+kube-prometheus-stack:
+
+  # deploy with vmagent
+  alertmanager:
+    enabled: false
+  prometheus:
+    enabled: false
+  prometheusOperator:
+    enabled: false

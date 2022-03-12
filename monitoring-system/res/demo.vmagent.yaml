@@ -1,0 +1,27 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: cluster
+spec:
+  selectAllByDefault: true
+
+  remoteWrite:
+  # insert to vmcluster without auth
+  - url: http://vminsert-incmon.monitoring-system:8480/insert/0/prometheus/api/v1/write
+    # insert to vmauth need auth
+    basicAuth:
+      username:
+        name: prometheus-basic-auth
+        key: username
+        optional: false
+      password:
+        name: prometheus-basic-auth
+        key: password
+        optional: false
+  volumes:
+  # if want to prevent lost data when restart vmagent
+  - name: persistent-queue-data
+    hostPath:
+      path: /data/vmagent/persistent-queue-data
+
+

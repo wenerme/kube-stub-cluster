@@ -2,6 +2,7 @@ name: kube-prometheus
 apiVersion: v2
 version: 1.0.0
 dependencies:
-- name: kube-prometheus
-  version: 6.6.11
+- name: victoria-metrics-k8s-stack
+  alias: victoria-metrics-stack
+  version: 0.7.10
   repository: https://charts.wener.tech

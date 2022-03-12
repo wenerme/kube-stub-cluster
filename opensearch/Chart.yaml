@@ -1,7 +1,7 @@
-name: kube-prometheus
+name: opensearch
 apiVersion: v2
 version: 1.0.0
 dependencies:
-- name: kube-prometheus
-  version: 6.6.11
+- name: opensearch
+  version: 1.8.3
   repository: https://charts.wener.tech

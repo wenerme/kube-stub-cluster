@@ -1,0 +1,61 @@
+victoria-metrics-stack:
+  operator:
+    kubectlImage:
+      repository: gcr.io/google_containers/hyperkube
+  defaultRules:
+    create: true
+  # choose single or cluster
+  vmsingle:
+    enabled: false
+    spec:
+      # storageDataPath will prevent create pvc
+      storageDataPath: /data
+      volumeMounts:
+      - name: data
+        mountPath: /data
+      volumes:
+      - name: data
+        hostPath: /data/vmsingle/data
+    ingress:
+      enabled: true
+      hosts:
+      - metrics.example.com
+  vmcluster:
+    enabled: false
+  # VMAlertmanager
+  alertmanager:
+    enabled: false
+  vmalert:
+    enabled: false
+  vmagent:
+    enabled: true
+
+  prometheus-node-exporter:
+    enabled: true
+  kube-state-metrics:
+    enabled: true
+    image:
+      repository: registry.cn-hongkong.aliyuncs.com/cmi/kube-state-metrics_kube-state-metrics
+      tag: v2.4.1
+
+  grafana:
+    enabled: false
+  # Service Monitors
+  kubelet:
+    enabled: true
+    cadvisor: true
+    probes: true
+  kubeApiServer:
+    enabled: true
+  kubeControllerManager:
+    enabled: true
+  coreDns:
+    enabled: true
+  kubeEtcd:
+    enabled: true
+  kubeScheduler:
+    enabled: true
+  kubeProxy:
+    enabled: true
+  kubeDns:
+    enabled: false

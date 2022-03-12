@@ -1,0 +1,8 @@
+opensearch:
+  replicas: 1
+  # CHANGEME
+  opensearchJavaOpts: "-Xmx512M -Xms512M"
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "100Mi"

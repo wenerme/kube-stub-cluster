@@ -1,0 +1,6 @@
+logging-operator:
+  image:
+    repository: ghcr.io/banzaicloud/logging-operator
+  monitoring:
+    serviceMonitor:
+      enabled: true

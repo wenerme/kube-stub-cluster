@@ -5,3 +5,8 @@ resources:
 - deployment.yaml
 - rbac.yaml
 namespace: monitoring-system
+images:
+- name: gcr.io/kubebuilder/kube-rbac-proxy
+  newName: registry.cn-hongkong.aliyuncs.com/cmi/kubebuilder_kube-rbac-proxy
+- name: quay.io/grafana-operator/grafana-operator
+  newName: registry.cn-hongkong.aliyuncs.com/cmi/grafana-operator_grafana-operator
