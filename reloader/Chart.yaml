@@ -1,8 +1,8 @@
-name: nats
+name: reloader
 apiVersion: v2
 version: 1.0.0
 
 dependencies:
-- name: nats
-  version: 0.14.1
+- name: reloader
+  version: v0.0.109
   repository: https://charts.wener.tech

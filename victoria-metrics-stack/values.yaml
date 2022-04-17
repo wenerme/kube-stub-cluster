@@ -29,6 +29,19 @@ victoria-metrics-stack:
     enabled: false
   vmagent:
     enabled: true
+    # CHANGEME
+    additionalRemoteWrites:
+    - url: http://vminsert-incmon:8480/insert/0/prometheus/api/v1/write
+      # if write through vmauth
+      basicAuth:
+        username:
+          name: prometheus-basic-auth
+          key: username
+          optional: false
+        password:
+          name: prometheus-basic-auth
+          key: password
+          optional: false
 
   prometheus-node-exporter:
     enabled: true

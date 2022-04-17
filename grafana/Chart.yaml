@@ -1,8 +1,8 @@
-name: nats-account-server
+name: grafana
 apiVersion: v2
 version: 1.0.0
 
 dependencies:
-- name: nats-account-server
-  version: 0.8.0
+- name: grafana
+  version: 6.24.1
   repository: https://charts.wener.tech

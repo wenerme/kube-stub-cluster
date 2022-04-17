@@ -1,0 +1,9 @@
+grafana:
+  ingress:
+    enabled: true
+    hosts:
+    - grafana.example.com
+  envFromSecret: ""
+  plugins:
+  - grafana-clock-panel
+  - grafana-polystat-panel

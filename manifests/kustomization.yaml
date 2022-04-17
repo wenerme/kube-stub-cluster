@@ -6,6 +6,7 @@ resources:
 - ./base/kubed.yaml
 - ./base/cert-manager.yaml
 - ./storage/openebs.yaml
+- ./base/reloader.yaml
 #
 - ./networking/metallb.yaml
 - ./networking/haproxytech-ingress.yaml
