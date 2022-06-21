@@ -4,4 +4,6 @@ kind: Kustomization
 resources:
 - install.yaml
 
-# image argoprojlabs/argocd-image-updater
+#images:
+#- name: quay.io/argoprojlabs/argocd-image-updater
+#  newName:
