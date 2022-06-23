@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: citus-issuer
+spec:
+  selfSigned: { }
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: citus-cert
+spec:
+  secretName: citus-cert
+  commonName: citus.default
+  dnsNames:
+  - '*.citus.default.svc.cluster.local'
+  issuerRef:
+    name: citus-issuer

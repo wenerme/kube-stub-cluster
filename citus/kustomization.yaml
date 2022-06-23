@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- citus.cm.yaml
+- citus.svc.yaml
+- citus.sts.yaml
+- worker.cm.yaml
+- worker.svc.yaml
+- worker.sts.yaml
