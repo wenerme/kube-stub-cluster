@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: keydb
+spec:
+  selector:
+    app: keydb
+  ports:
+  - port: 6379
+    name: redis
+    targetPort: redis
+  clusterIP: None
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: keydb-nodeport
+spec:
+  selector:
+    app: keydb
+  ports:
+  - port: 6379
+    name: redis
+    targetPort: redis
+    nodePort: 30100
+  type: NodePort

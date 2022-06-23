@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keydb-conf
+data:
+  keydb.conf: |
+    dir /data/
+    appendonly yes
+    appendfsync no
+    aclfile /secret/users.acl
+    server-threads 2
+
+    save 900 1
+    save 600 100
+    save 300 100000

@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: keydb
+  labels:
+    app: keydb
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  serviceName: keydb
+  replicas: 3
+  template:
+    metadata:
+      name: keydb
+      labels:
+        app: keydb
+    spec:
+      containers:
+      - name: keydb
+        image: eqalpha/keydb:alpine_x86_64_v6.3.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - |
+          # rm -vrf /data/* # reset
+          args="--active-replica yes"
+          [ $POD_REPLICAS > 2 ] && args="$args --multi-master yes"
+          for i in $(seq 0 $(($POD_REPLICAS-1))); do
+          [ $HOSTNAME = "keydb-$i" ] || args="$args --replicaof keydb-$i.keydb.$POD_NAMESPACE.svc.cluster.local 6379"
+          done
+          echo ARGS: $args
+          
+          args="$args --masteruser replica --masterauth $(cat /secret/keydb_masterauth)"
+          
+          keydb-server /conf/keydb.conf $args
+
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_REPLICAS
+          value: '3'
+        ports:
+        - containerPort: 6379
+          name: redis
+        readinessProbe:
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+          periodSeconds: 3
+          exec:
+            command:
+            - keydb-cli
+            - ping
+        livenessProbe:
+          tcpSocket:
+            port: redis
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 30
+          failureThreshold: 5
+          successThreshold: 1
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /conf
+          name: conf
+        - mountPath: /secret
+          name: secret
+      volumes:
+      - name: conf
+        configMap:
+          name: keydb-conf
+      - name: secret
+        secret:
+          secretName: keydb-secrets
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: keydb
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: keydb
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: local-path
+      resources:
+        requests:
+          storage: 5Gi
