@@ -72,10 +72,10 @@ up-verify-server: up verify-server
 up-build: up build
 
 
-SEAL_PATTERN ?= ".*"
+SEAL_PATTERN ?= .*
 seal: ## seal all secret to sealed
 	@mkdir -p templates
-	@ls *.secret.yaml | grep -E "$(SEAL_PATTERN)" | tee -a /dev/fd/2 | xargs -n 1 -I {} sh -c '$(KUBESEAL) -f {} -o yaml > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
+	@ls *.secret.yaml | grep -E "$(SEAL_PATTERN)" | tee -a /dev/fd/2 | xargs -I {} sh -c '$(KUBESEAL) -f {} -o yaml > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
 	@git add templates/*.sealed.yaml
 
 kustomize-add-templates:

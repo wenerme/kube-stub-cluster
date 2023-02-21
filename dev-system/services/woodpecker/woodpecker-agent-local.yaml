@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: woodpecker-agent-local
+  labels:
+    app: woodpecker-agent-local
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: woodpecker-agent-local
+      labels:
+        app: woodpecker-agent-local
+    spec:
+      containers:
+      - name: woodpecker-agent-local
+        image: woodpeckerci/woodpecker-agent:next-alpine
+        imagePullPolicy: Always
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        envFrom:
+        - secretRef:
+            name: woodpecker-agent-local-env
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+          readOnly: false
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: woodpecker-agent-local

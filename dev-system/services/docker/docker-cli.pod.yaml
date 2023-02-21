@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: docker-cli
+  labels:
+    app: docker-cli
+spec:
+  containers:
+  - name: docker
+    image: docker:git
+    imagePullPolicy: IfNotPresent
+    command:
+    - tail
+    - -f
+    - /dev/null
+    env:
+    - name: DOCKER_HOST
+      # tls 2356
+      # non-tls 2355
+      value: tcp://docker:2376
+    - name: DOCKER_DRIVER
+      value: overlay2
+    # non-tls
+    # DOCKER_TLS_CERTDIR=''
+    - name: DOCKER_CERT_PATH
+      value: '/var/lib/docker/certs/client'
+    - name: DOCKER_TLS_VERIFY
+      value: '1'
+    volumeMounts:
+    - mountPath: /var/lib/docker/certs/client
+      name: certs
+  volumes:
+  - name: certs
+    hostPath:
+      path: /data/ns/dev-system/dind/data/certs/client
+  restartPolicy: Always
+
+# Test
+# docker pull wener/base
+# docker tag wener/base docker-registry:5000/wener_base
+# docker push docker-registry:5000/wener_base

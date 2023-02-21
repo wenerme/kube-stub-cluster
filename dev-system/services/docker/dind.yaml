@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dind
+  labels:
+    app: dind
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: dind
+      labels:
+        app: dind
+    spec:
+      containers:
+      - name: dind
+        image: docker:23.0.1-dind
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        args:
+        - --insecure-registry
+        - docker-registry:5000
+        ports:
+        - containerPort: 2375
+          name: docker
+        - containerPort: 2376
+          name: dockers
+        env:
+        # 设置为 空 则不验证
+        - name: DOCKER_TLS_CERTDIR
+          value: '/var/lib/docker/certs'
+        volumeMounts:
+        - mountPath: /var/lib/docker
+          name: data
+        - mountPath: /cache
+          name: cache
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/dev-system/dind/data
+      - name: cache
+        hostPath:
+          path: /data/ns/dev-system/dind/cache
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: dind

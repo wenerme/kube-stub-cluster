@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-registry
+  labels:
+    app: docker-registry
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: docker-registry
+      labels:
+        app: docker-registry
+    spec:
+      containers:
+      - name: docker-registry
+        image: registry:2.8.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: registry
+        # https://docs.docker.com/registry/deploying/
+        # REGISTRY_HTTP_ADDR=0.0.0.0:5000
+        # REGISTRY_HTTP_TLS_CERTIFICATE
+        # REGISTRY_HTTP_TLS_KEY
+        # REGISTRY_AUTH=htpasswd
+        # "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"
+        # REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+        volumeMounts:
+        - mountPath: /var/lib/registry
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/dev-system/docker-registry/data
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: docker-registry
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-registry
+spec:
+  selector:
+    app: docker-registry
+  ports:
+  - port: 5000
+    name: registry
+    targetPort: registry

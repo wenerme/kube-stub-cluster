@@ -1,0 +1,15 @@
+# tls match docker, localhost
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker
+spec:
+  selector:
+    app: dind
+  ports:
+  - port: 2375
+    name: docker
+    targetPort: docker
+  - port: 2376
+    name: dockers
+    targetPort: dockers
