@@ -1,9 +1,12 @@
-REPO=wener
+REPO_ROOT ?= $(shell git rev-parse --show-toplevel)
+-include $(REPO_ROOT)/k8s.mk
 
-publish:
-	mkdir -p charts
-	helm package -u -d charts `ls */Chart.yaml | xargs dirname`
-	ls charts/* | xargs -I {} helm push {} ${REPO}
+info:
+build:
+seal:
 
-lint:
-	ls */Chart.yaml | xargs dirname | xargs -n 1 -I {} helm lint --strict {}
+up-verify: up verify
+up-verify-server: up verify-server
+up-build: up build
+
+delete:

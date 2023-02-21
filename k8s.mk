@@ -2,8 +2,7 @@ REPO_ROOT 	?= $(shell git rev-parse --show-toplevel)
 #-include $(REPO_ROOT)/mod.mk # copy to dir & uncomment
 
 SHEL := /bin/bash
--include .env
--include $(REPO_ROOT)/.env
+-include $(wildcard .env.* $(REPO_ROOT)/.env.* .env $(REPO_ROOT)/.env)
 export NAMESPACE
 export KUBE_CONTEXT
 
@@ -14,8 +13,13 @@ NAMESPACE := $(or $(NAMESPACE), $(shell [ -e ./NAMESPACE ] && cat NAMESPACE))
 NAMESPACE := $(or $(NAMESPACE), $(shell basename $(shell pwd)))
 
 KUBECTL 	?= kubectl
-HELM 			?= helm
+HELM 		?= helm
 KUBESEAL 	?= kubeseal
+
+ifneq ("$(wildcard $(REPO_ROOT)/kubeconfig.yaml)","")
+KUBECTL := $(KUBECTL) --kubeconfig $(REPO_ROOT)/kubeconfig.yaml
+export KUBECONFIG="$(REPO_ROOT)/kubeconfig.yaml"
+endif
 
 ifneq ($(NAMESPACE),)
 KUBECTL 	:= $(KUBECTL) -n $(NAMESPACE)
@@ -28,6 +32,8 @@ KUBECTL 	:= $(KUBECTL) --context $(KUBE_CONTEXT)
 HELM 		:= $(HELM) --kube-context $(KUBE_CONTEXT)
 KUBESEAL 	:= $(KUBESEAL) --context $(KUBE_CONTEXT)
 endif
+
+
 
 ifneq ("$(wildcard kustomization.yaml)","")
 
@@ -66,10 +72,11 @@ up-verify-server: up verify-server
 up-build: up build
 
 
+SEAL_PATTERN ?= ".*"
 seal: ## seal all secret to sealed
-	mkdir -p templates
-	ls *.secret.yaml | xargs -n 1 -I {} sh -c '$(KUBESEAL) -f {} -o yaml > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
-	git add templates/*.sealed.yaml
+	@mkdir -p templates
+	@ls *.secret.yaml | grep -E "$(SEAL_PATTERN)" | tee -a /dev/fd/2 | xargs -n 1 -I {} sh -c '$(KUBESEAL) -f {} -o yaml > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
+	@git add templates/*.sealed.yaml
 
 kustomize-add-templates:
 	kustomize edit add resource templates/*.yaml
@@ -86,6 +93,6 @@ nodes: ## show nodes in cluster for verify config
 
 
 help: ## Show this help
-	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -E -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 %: %-default

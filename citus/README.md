@@ -13,5 +13,6 @@
 
 **TBD**
 
+- pg replica
 - ensure extension ready instead of sleep ?
 - retry add node ?

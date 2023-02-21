@@ -8,8 +8,7 @@ metadata:
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
 data:
-  # customized instance label - prevent conflict with helm release
-  application.instanceLabelKey: app.kubernetes.io/argocd-instance
+  application.resourceTrackingMethod: annotation
   ga.trackingid: ''
 
 # prefer secret

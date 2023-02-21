@@ -48,7 +48,7 @@ spec:
         - |
           sh <<'SH' &
           node_name=${HOSTNAME}.citus-worker.${POD_NAMESPACE}.svc.cluster.local;
-          
+
           echo [$(date -Iseconds)] Wait pg_isready;
           timeout 5m sh -c 'until pg_isready -U postgres --timeout=5 --quiet; do sleep 2; done;';
           pg_isready -U postgres --quiet || { echo pg not ready; kill -9 1; exit 1; };
@@ -59,18 +59,18 @@ spec:
           echo [$(date -Iseconds)] Wait name resolve ${node_name};
           timeout 1m sh -c "until nslookup ${node_name} > /dev/null; do sleep 2; done;";
           nslookup ${node_name} > /dev/null || { echo Name not ready; kill -9 1; exit 1; }
-          
+
           echo [$(date -Iseconds)] Wait manager;
           timeout 5m sh -c "until psql 'host=citus user=postgres' -c 'SELECT citus_is_coordinator()' > /dev/null; do sleep 2; done;";
           psql 'host=citus user=postgres' -c 'SELECT citus_is_coordinator()' > /dev/null || { echo Manager not ready; kill -9 1; exit 1; }
-          
+
           echo [$(date -Iseconds)] citus_add_node ${node_name};
           psql 'host=citus user=postgres' -c "SELECT * from citus_add_node('${node_name}', 5432);" || {
             echo citus_add_node failed;
             kill -9 1;
           }
           SH
-          
+
           su-exec postgres "/usr/local/bin/docker-entrypoint.sh" "postgres" \
             -c ssl=on -c ssl_cert_file=/etc/citus-cert/tls.crt -c ssl_key_file=/etc/citus-cert/tls.key \
             -c config_file=/etc/postgres/postgresql.conf \
