@@ -62,6 +62,30 @@ kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut
 kubectl get events -w --all-namespaces
 ```
 
+## Explain
+
+> **Note**
+>
+> 1. Prefer **not** use helm to deploy - hard to maintain & track
+> 2. Prefer **hostPath** to deploy PoC - use PVC for cluster or keep use hostPath for simple case
+
+**Structure**
+
+- /cluster-manifest
+  - bootstrap.yaml - ArgoCD Application for cluster-manifest
+  - cluster/ - cluster wide resources
+  - res/ - predefined resources
+  - ns/ - namespace
+  - services/
+  - patches/
+
+**hostPath**
+
+- `/data/ns/<namespace>/<deploy>/<volume-name>`
+  - `/data/ns/data-system/postgres/data`
+- `/data/ns/<namespace>/<service-category>/<service>/<volume-name>`
+  - `/data/ns/data-system/supabase/imgproxy/storage`
+
 ## Release Watch
 
 - ![](https://img.shields.io/github/v/release/keycloak/keycloak?label=Keycloak)
