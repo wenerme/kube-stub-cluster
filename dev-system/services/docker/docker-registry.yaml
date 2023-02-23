@@ -26,6 +26,9 @@ spec:
         # REGISTRY_AUTH=htpasswd
         # "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"
         # REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+        env:
+        - name: REGISTRY_PROXY_REMOTEURL
+          value: https://registry-1.docker.io
         volumeMounts:
         - mountPath: /var/lib/registry
           name: data

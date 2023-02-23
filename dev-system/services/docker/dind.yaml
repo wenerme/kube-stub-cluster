@@ -14,13 +14,17 @@ spec:
     spec:
       containers:
       - name: dind
-        image: docker:23.0.1-dind
+        image: docker:23.0.1-dind-alpine3.17
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
         args:
         - --insecure-registry
         - docker-registry:5000
+        - --registry-mirror
+        - http://docker-registry:5000
+        - --registry-mirror
+        - https://registry-1.docker.io
         ports:
         - containerPort: 2375
           name: docker

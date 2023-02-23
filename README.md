@@ -69,8 +69,31 @@ kubectl get events -w --all-namespaces
 > 1. Prefer **not** use helm to deploy - hard to maintain & track
 > 2. Prefer **hostPath** to deploy PoC - use PVC for cluster or keep use hostPath for simple case
 
+**Bootstrap**
+
+```bash
+make nodes # config works
+
+cd argocd
+make apply
+
+cd -
+
+cd cluster-manifest
+# edit repo-ops.secret.yaml update git repo auth info
+kubectl apply -f repo-ops.secret.yaml
+# edit bootstrap.yaml update git repo
+kubectl apply -f bootstrap.yaml
+
+# edit pathes/app-main-repo.yaml update git repo
+# edit pathes/cluster-issuer-acme-email.yaml update email
+
+# modify kustomization.yaml as needed
+```
+
 **Structure**
 
+- /argocd
 - /cluster-manifest
   - bootstrap.yaml - ArgoCD Application for cluster-manifest
   - cluster/ - cluster wide resources
@@ -78,6 +101,8 @@ kubectl get events -w --all-namespaces
   - ns/ - namespace
   - services/
   - patches/
+- /charts - local charts to help deploy
+- /dockerfiles - dockerfiles to build adhoc images
 
 **hostPath**
 
