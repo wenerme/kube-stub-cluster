@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-realtime
+  labels:
+    app: supabase
+    component: realtime
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: supabase-realtime
+      labels:
+        app: supabase
+        component: realtime
+    spec:
+      containers:
+      - name: supabase-realtime
+        image: supabase/realtime:v2.5.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - |
+          /app/bin/migrate && /app/bin/realtime eval 'Realtime.Release.seeds(Realtime.Repo)' && /app/bin/server
+        ports:
+        - containerPort: 4000
+          name: api
+        startupProbe:
+          tcpSocket:
+            port: api
+        envFrom:
+        - secretRef:
+            name: supabase-realtime-env
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: supabase
+      component: realtime
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-realtime
+  labels:
+    app: supabase
+    component: realtime
+spec:
+  selector:
+    app: supabase
+    component: realtime
+  ports:
+  - port: 4000
+    targetPort: api
+    name: api

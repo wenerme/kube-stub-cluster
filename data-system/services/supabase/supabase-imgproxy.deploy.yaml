@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-imgproxy
+  labels:
+    app: supabase
+    component: imgproxy
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: supabase-imgproxy
+      labels:
+        app: supabase
+        component: imgproxy
+    spec:
+      containers:
+      - name: supabase-imgproxy
+        image: darthsim/imgproxy:v3.11
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: IMGPROXY_BIND
+          value: ":5001"
+        - name: IMGPROXY_LOCAL_FILESYSTEM_ROOT
+          value: /
+        - name: IMGPROXY_USE_ETAG
+          value: 'true'
+        volumeMounts:
+        - mountPath: /var/lib/storage
+          name: storage
+      volumes:
+      - name: storage
+        hostPath:
+          path: /data/ns/data-system/supabase/imgproxy/storage
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: supabase
+      component: imgproxy
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-imgproxy
+  labels:
+    app: supabase
+    component: imgproxy
+spec:
+  selector:
+    app: supabase
+    component: imgproxy
+  ports:
+  - port: 5001
+    targetPort: api
+    name: api

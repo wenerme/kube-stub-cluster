@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-storage
+  labels:
+    app: supabase
+    component: storage
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: supabase-storage
+      labels:
+        app: supabase
+        component: storage
+    spec:
+      containers:
+      - name: supabase-storage
+        image: supabase/storage-api:v0.28.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: api
+        env:
+        - name: FILE_SIZE_LIMIT
+          value: '52428800'
+        - name: STORAGE_BACKEND
+          value: file
+        - name: FILE_STORAGE_BACKEND_PATH
+          value: /var/lib/storage
+        - name: TENANT_ID
+          value: default
+        # https://github.com/supabase/storage-api/issues/55
+        - name: REGION
+          value: default
+        - name: GLOBAL_S3_BUCKET
+          value: default
+        - name: ENABLE_IMAGE_TRANSFORMATION
+          value: "true"
+        - name: IMGPROXY_URL
+          value: http://supabase-imgproxy:5001
+        envFrom:
+        - secretRef:
+            name: supabase-storage-env
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: supabase
+      component: storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-storage
+  labels:
+    app: supabase
+    component: storage
+spec:
+  selector:
+    app: supabase
+    component: storage
+  ports:
+  - port: 5000
+    targetPort: api
+    name: api

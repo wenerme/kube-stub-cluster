@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-kong
+  labels:
+    app: supabase
+    component: kong
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: supabase-kong
+      labels:
+        app: supabase
+        component: kong
+    spec:
+      containers:
+      - name: supabase-kong
+        image: kong:2.8.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 8443
+          name: https
+        - containerPort: 8001
+          name: admin
+        - containerPort: 8444
+          name: admins
+        env:
+        - name: KONG_ADMIN_LISTEN
+          value: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+        - name: KONG_DATABASE
+          value: 'off'
+        - name: KONG_DECLARATIVE_CONFIG
+          value: /var/lib/kong/kong.yml
+        - name: KONG_DNS_ORDER
+          # https://github.com/supabase/cli/issues/14
+          # LAST,SRV,A,CNAME
+          value: 'LAST,A,CNAME'
+        - name: KONG_PLUGINS
+          value: request-transformer,cors,key-auth,acl
+        - name: KONG_NGINX_PROXY_PROXY_BUFFER_SIZE
+          value: 160k
+        - name: KONG_NGINX_PROXY_PROXY_BUFFERS
+          value: 64 160k
+        volumeMounts:
+        - mountPath: /var/lib/kong
+          name: conf
+      volumes:
+      - name: conf
+        secret:
+          secretName: supabase-kong-conf
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: supabase
+      component: kong
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-kong
+  labels:
+    app: supabase
+    component: kong
+spec:
+  selector:
+    app: supabase
+    component: kong
+  ports:
+  - port: 8000
+    name: http
+    targetPort: http
+  - port: 8443
+    name: https
+    targetPort: https
+  - port: 8001
+    name: admin
+    targetPort: admin

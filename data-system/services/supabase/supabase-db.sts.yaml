@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: supabase-db
+  labels:
+    app: supabase
+    component: db
+spec:
+  selector:
+    matchLabels:
+      app: supabase
+      component: db
+  serviceName: supabase-db
+  template:
+    metadata:
+      labels:
+        app: supabase
+        component: db
+    spec:
+      initContainers:
+      - name: chown
+        image: wener/base
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          chown -R 999:999 /var/lib/postgresql/data
+          chmod -R 700 /var/lib/postgresql/data
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+      containers:
+      - name: postgres
+        image: supabase/postgres:15.1.0.44
+        imagePullPolicy: IfNotPresent
+        # postgres 999
+        securityContext:
+          runAsUser: 999
+          runAsGroup: 999
+        # keep docker-entrypoint
+        args:
+        - postgres
+        - -c
+        - config_file=/etc/postgresql/postgresql.conf
+        - -c
+        - log_min_messages=fatal # prevents Realtime polling queries from appearing in logs
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_HOST
+          value: /var/run/postgresql
+        - name: PGPORT
+          value: '5432'
+        - name: POSTGRES_PORT
+          value: '5432'
+        - name: PGDATABASE
+          value: postgres
+        - name: POSTGRES_DB
+          value: postgres
+#        - name: PGDATA
+#          value: /var/lib/postgresql/data
+        envFrom:
+        - secretRef:
+            name: supabase-env
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: data
+        - mountPath: /docker-entrypoint-initdb.d/realtime.sql
+          name: sql
+          subPath: realtime.sql
+        - mountPath: /docker-entrypoint-initdb.d/roles.sql
+          name: sql
+          subPath: roles.sql
+        - mountPath: /etc/postgresql.schema.sql
+          name: sql
+          subPath: webhooks.sql
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/data-system/supabase/postgres/data
+      - name: sql
+        configMap:
+          name: supabase-sql-conf
+          optional: false
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-db
+  labels:
+    app: supabase
+    component: db
+spec:
+  selector:
+    app: supabase
+    component: db
+  ports:
+  - port: 5432
+    name: postgres
+    targetPort: postgres

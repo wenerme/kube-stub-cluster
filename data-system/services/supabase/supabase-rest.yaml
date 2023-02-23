@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-rest
+  labels:
+    app: supabase
+    component: rest
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: supabase-rest
+      labels:
+        app: supabase
+        component: rest
+    spec:
+      containers:
+      - name: supabase-rest
+        image: postgrest/postgrest:v10.1.2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: api
+        envFrom:
+        - secretRef:
+            name: supabase-rest-env
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: supabase
+      component: rest
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-rest
+  labels:
+    app: supabase
+    component: rest
+spec:
+  selector:
+    app: supabase
+    component: rest
+  ports:
+  - port: 3000
+    targetPort: api
+    name: api

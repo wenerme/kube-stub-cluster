@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-auth
+  labels:
+    app: supabase
+    component: auth
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: supabase-auth
+      labels:
+        app: supabase
+        component: auth
+    spec:
+      containers:
+      - name: supabase-auth
+        image: supabase/gotrue:v2.47.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9999
+          name: api
+        envFrom:
+        - secretRef:
+            name: supabase-auth-env
+        startupProbe:
+          httpGet:
+            path: /health
+            port: api
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: supabase
+      component: auth
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-auth
+  labels:
+    app: supabase
+    component: auth
+spec:
+  selector:
+    app: supabase
+    component: auth
+  ports:
+  - port: 9999
+    targetPort: api
+    name: api

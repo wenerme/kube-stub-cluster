@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supabase-studio
+  labels:
+    app: supabase
+    component: studio
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: supabase-studio
+      labels:
+        app: supabase
+        component: studio
+    spec:
+      containers:
+      - name: supabase-studio
+        image: supabase/studio:20230216-e731b77
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: web
+        envFrom:
+        - secretRef:
+            name: supabase-studio-env
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: supabase
+      component: studio
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: supabase-studio
+  labels:
+    app: supabase
+    component: studio
+spec:
+  selector:
+    app: supabase
+    component: studio
+  ports:
+  - port: 3000
+    targetPort: web
+    name: web
