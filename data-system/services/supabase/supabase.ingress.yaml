@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: supabase-public
+spec:
+  rules:
+  - host: 'supabase.example.com'
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: supabase-kong
+            port:
+              name: http
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: supabase-private
+spec:
+  rules:
+  - host: studio.supabase.internal.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: supabase-studio
+            port:
+              name: web
+        pathType: Prefix
+        path: /
+  - host: kong.supabase.internal.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: supabase-kong
+            port:
+              name: admin
+        pathType: Prefix
+        path: /

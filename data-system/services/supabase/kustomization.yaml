@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- supabase-auth-env.secret.yaml
+- supabase-auth.yaml
+- supabase-db.sts.yaml
+- supabase-imgproxy.deploy.yaml
+- supabase-kong-conf.secret.yaml
+- supabase-kong.yaml
+- supabase-meta-env.secret.yaml
+- supabase-meta.deploy.yaml
+- supabase-realtime-env.secret.yaml
+- supabase-realtime.yaml
+- supabase-rest-env.secret.yaml
+- supabase-rest.yaml
+- supabase-sql-conf.yaml
+- supabase-storage-env.secret.yaml
+- supabase-storage.yaml
+- supabase-studio-env.secret.yaml
+- supabase-studio.yaml
+- supabase.ingress.yaml
