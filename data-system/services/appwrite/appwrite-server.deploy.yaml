@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-server
+  labels:
+    app: appwrite
+    component: server
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: server
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: server
+    spec:
+      containers:
+      - name: server
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: web
+        envFrom:
+        - secretRef:
+            name: appwrite-env
+        volumeMounts:
+        - mountPath: /storage/uploads
+          name: storage-uploads
+        - mountPath: /storage/cache
+          name: storage-cache
+        - mountPath: /storage/config
+          name: storage-config
+        - mountPath: /storage/certificates
+          name: storage-certificates
+        - mountPath: /storage/functions
+          name: storage-functions
+      volumes:
+      - name: storage-uploads
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/uploads
+      - name: storage-cache
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/cache
+      - name: storage-config
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/config
+      - name: storage-certificates
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/certificates
+      - name: storage-functions
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/functions
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: appwrite-server
+  labels:
+    app: appwrite
+    component: server
+spec:
+  selector:
+    app: appwrite
+    component: server
+  ports:
+  - port: 80
+    targetPort: web
+    name: web

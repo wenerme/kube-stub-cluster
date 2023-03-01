@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: appwrite-redis
+  labels:
+    app: appwrite
+    component: redis
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: redis
+  serviceName: appwrite-redis
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7.0.4-alpine
+        imagePullPolicy: IfNotPresent
+        args:
+        - redis-server
+        - --maxmemory
+        - 512mb
+        - --maxmemory-policy
+        - allkeys-lru
+        - --maxmemory-samples
+        - '5'
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - mountPath: /data
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/data-system/appwrite/redis/data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: appwrite-redis
+  labels:
+    app: appwrite
+    component: redis
+spec:
+  selector:
+    app: appwrite
+    component: redis
+  ports:
+  - port: 6379
+    targetPort: redis
+    name: redis

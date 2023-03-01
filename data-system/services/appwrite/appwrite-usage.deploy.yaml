@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-usage
+  labels:
+    app: appwrite
+    component: usage
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: usage
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: usage
+    spec:
+      containers:
+      - name: usage
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - usage
+        envFrom:
+        - secretRef:
+            name: appwrite-env

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-telegraf
+  labels:
+    app: appwrite
+    component: telegraf
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: telegraf
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: telegraf
+    spec:
+      containers:
+      - name: telegraf
+        image: appwrite/telegraf:1.4.0
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: _APP_INFLUXDB_HOST
+          value: appwrite-influxdb
+        - name: _APP_INFLUXDB_PORT
+          value: '8086'
+

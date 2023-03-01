@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-worker-webhooks
+  labels:
+    app: appwrite
+    component: worker-webhooks
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: worker-webhooks
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: worker-webhooks
+    spec:
+      containers:
+      - name: worker-webhooks
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - worker-webhooks
+        envFrom:
+        - secretRef:
+            name: appwrite-env

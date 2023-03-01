@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-worker-audits
+  labels:
+    app: appwrite
+    component: worker-audits
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: worker-audits
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: worker-audits
+    spec:
+      containers:
+      - name: worker-audits
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - worker-audits
+        envFrom:
+        - secretRef:
+            name: appwrite-env

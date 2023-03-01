@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-executor
+  labels:
+    app: appwrite
+    component: executor
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: executor
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: executor
+    spec:
+      containers:
+      - name: executor
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - executor
+        envFrom:
+        - secretRef:
+            name: appwrite-env
+        volumeMounts:
+        - mountPath: /storage/functions
+          name: storage-functions
+        - mountPath: /storage/builds
+          name: storage-builds
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+        - mountPath: /tmp
+          name: tmp
+      volumes:
+      - name: storage-functions
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/functions
+      - name: storage-builds
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/builds
+      - name: docker-sock
+        hostPath:
+          path: /data/ns/dev-system/dind/run/docker.sock
+          type: Socket
+      - name: tmp
+        emptyDir: { }
+

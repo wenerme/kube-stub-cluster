@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-worker-mails
+  labels:
+    app: appwrite
+    component: worker-mails
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: worker-mails
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: worker-mails
+    spec:
+      containers:
+      - name: worker-mails
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - worker-mails
+        envFrom:
+        - secretRef:
+            name: appwrite-env

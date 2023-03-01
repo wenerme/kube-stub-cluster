@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-maintenance
+  labels:
+    app: appwrite
+    component: maintenance
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: maintenance
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: maintenance
+    spec:
+      containers:
+      - name: maintenance
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - maintenance
+        envFrom:
+        - secretRef:
+            name: appwrite-env

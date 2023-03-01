@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- appwrite-env.secret.yaml
+- appwrite-executor.deploy.yaml
+- appwrite-influxdb.sts.yaml
+- appwrite-maintenance.deploy.yaml
+- appwrite-mariadb-env.secret.yaml
+- appwrite-mariadb.sts.yaml
+- appwrite-realtime.deploy.yaml
+- appwrite-redis.sts.yaml
+- appwrite-schedule.deploy.yaml
+- appwrite-server.deploy.yaml
+- appwrite-telegraf.deploy.yaml
+- appwrite-usage.deploy.yaml
+- appwrite-worker-audits.deploy.yaml
+- appwrite-worker-builds.deploy.yaml
+- appwrite-worker-certificates.deploy.yaml
+- appwrite-worker-databases.deploy.yaml
+- appwrite-worker-deletes.deploy.yaml
+- appwrite-worker-functions.deploy.yaml
+- appwrite-worker-mails.deploy.yaml
+- appwrite-worker-messaging.deploy.yaml
+- appwrite-worker-webhooks.deploy.yaml
+- appwrite.ingress.yaml

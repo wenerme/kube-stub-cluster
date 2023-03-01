@@ -1,4 +1,6 @@
-# supabase on Kubernetes
+# appwrite on Kubernetes
+
+- Based on https://appwrite.io/install/compose
 
 ## Install
 
@@ -18,6 +20,12 @@ ensure extra resource included
 
 ```bash
 kustomize edit add resource *.yaml
+```
+
+review
+
+```base
+kustomize build .
 ```
 
 install

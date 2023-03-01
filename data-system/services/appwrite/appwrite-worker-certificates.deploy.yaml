@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-worker-certificates
+  labels:
+    app: appwrite
+    component: worker-certificates
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: worker-certificates
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: worker-certificates
+    spec:
+      containers:
+      - name: worker-certificates
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - worker-certificates
+        envFrom:
+        - secretRef:
+            name: appwrite-env
+        volumeMounts:
+        - mountPath: /storage/config
+          name: storage-config
+        - mountPath: /storage/certificates
+          name: storage-certificates
+      volumes:
+      - name: storage-config
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/config
+      - name: storage-certificates
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/certificates

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: appwrite-mariadb
+  labels:
+    app: appwrite
+    component: mariadb
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: mariadb
+  serviceName: appwrite-mariadb
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: mariadb
+    spec:
+      containers:
+      - name: mariadb
+        image: mariadb:10.7 # fix issues when upgrading using: mysql_upgrade -u root -p
+        imagePullPolicy: IfNotPresent
+#        args:
+#        - mysqld
+#        - --innodb-flush-method=fsync
+        ports:
+        - containerPort: 3306
+          name: mysql
+        envFrom:
+        - secretRef:
+            name: appwrite-mariadb-env
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/data-system/appwrite/mariadb/data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: appwrite-mariadb
+  labels:
+    app: appwrite
+    component: mariadb
+spec:
+  selector:
+    app: appwrite
+    component: mariadb
+  ports:
+  - port: 3306
+    targetPort: mysql
+    name: mysql

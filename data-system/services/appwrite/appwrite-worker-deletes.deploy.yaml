@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-worker-deletes
+  labels:
+    app: appwrite
+    component: worker-deletes
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: worker-deletes
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: worker-deletes
+    spec:
+      containers:
+      - name: worker-deletes
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - worker-deletes
+        envFrom:
+        - secretRef:
+            name: appwrite-env
+        volumeMounts:
+        - mountPath: /storage/uploads
+          name: storage-uploads
+        - mountPath: /storage/cache
+          name: storage-cache
+        - mountPath: /storage/functions
+          name: storage-functions
+        - mountPath: /storage/builds
+          name: storage-builds
+        - mountPath: /storage/certificates
+          name: storage-certificates
+      volumes:
+      - name: storage-uploads
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/uploads
+      - name: storage-cache
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/cache
+      - name: storage-functions
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/functions
+      - name: storage-builds
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/builds
+      - name: storage-certificates
+        hostPath:
+          path: /data/ns/data-system/appwrite/storage/certificates

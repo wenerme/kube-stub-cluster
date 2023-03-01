@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-realtime
+  labels:
+    app: appwrite
+    component: realtime
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: realtime
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: realtime
+    spec:
+      containers:
+      - name: realtime
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - realtime
+        # ws /v1/realtime
+        ports:
+        - containerPort: 80
+          name: api
+        envFrom:
+        - secretRef:
+            name: appwrite-env
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: appwrite-realtime
+  labels:
+    app: appwrite
+    component: realtime
+spec:
+  selector:
+    app: appwrite
+    component: realtime
+  ports:
+  - port: 80
+    targetPort: api
+    name: api

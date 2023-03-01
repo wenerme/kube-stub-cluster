@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: appwrite-influxdb
+  labels:
+    app: appwrite
+    component: influxdb
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: influxdb
+  serviceName: appwrite-influxdb
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: influxdb
+    spec:
+      containers:
+      - name: influxdb
+        image: appwrite/influxdb:1.5.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8086
+          name: influxdb
+        volumeMounts:
+        - mountPath: /var/lib/influxdb
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/data-system/appwrite/influxdb/data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: appwrite-influxdb
+  labels:
+    app: appwrite
+    component: influxdb
+spec:
+  selector:
+    app: appwrite
+    component: influxdb
+  ports:
+  - port: 8086
+    targetPort: influxdb
+    name: influxdb

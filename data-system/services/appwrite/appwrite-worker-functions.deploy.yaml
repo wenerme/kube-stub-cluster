@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appwrite-worker-functions
+  labels:
+    app: appwrite
+    component: worker-functions
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: appwrite
+      component: worker-functions
+  template:
+    metadata:
+      labels:
+        app: appwrite
+        component: worker-functions
+    spec:
+      containers:
+      - name: worker-functions
+        image: appwrite/appwrite:1.2.1
+        imagePullPolicy: IfNotPresent
+        command:
+        - worker-functions
+        envFrom:
+        - secretRef:
+            name: appwrite-env
