@@ -35,7 +35,7 @@ metadata:
     reloader.stakater.com/auto: 'true'
 spec:
   serviceName: nacos-headless
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
@@ -75,17 +75,17 @@ spec:
           name: old-raft-rpc
         env:
         - name: NACOS_REPLICAS
-          value: "1"
+          value: "3"
         - name: MODE
-          value: "standalone"
-        # value: "cluster"
+          #value: "standalone"
+          value: "cluster"
         - name: NACOS_SERVER_PORT
           value: "8848"
         - name: PREFER_HOST_MODE
           value: "dev-system-nacos"
         - name: NACOS_SERVERS
-          value: "nacos-0.nacos-headless.default.svc.cluster.local:8848 nacos-1.nacos-headless.default.svc.cluster.local:8848 nacos-2.nacos-headless.default.svc.cluster.local:8848"
-        # value: "nacos-0.nacos-headless.default.svc.cluster.local:8848"
+          value: "nacos-0.nacos-headles:8848 nacos-1.nacos-headles:8848 nacos-2.nacos-headles:8848"
+        # value: "nacos-0.nacos-headles:8848"
         envFrom:
         - secretRef:
             name: nacos-env

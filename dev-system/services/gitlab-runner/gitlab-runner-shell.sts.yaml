@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gitlab-runner-shell
+  labels:
+    app: gitlab-runner-shell
+spec:
+  serviceName: gitlab-runner-shell
+  replicas: 1
+  template:
+    metadata:
+      name: gitlab-runner-shell
+      labels:
+        app: gitlab-runner-shell
+    spec:
+      containers:
+      - name: gitlab-runner-shell
+        image: wener/gitlab-runner:15.5.1-dev
+        imagePullPolicy: Always
+        env:
+        - name: CI_SERVER_URL
+          value: https://gitlab.com
+        #- name: REGISTRATION_TOKEN
+        #  value: $(REGISTRATION_TOKEN)
+        - name: RUNNER_NAME
+          value: dev-system-shell
+        - name: REGISTER_NON_INTERACTIVE
+          value: 'true'
+        - name: RUNNER_EXECUTOR
+          value: shell
+        #
+        - name: DOCKER_HOST
+          value: tcp://docker:2376
+        - name: DOCKER_DRIVER
+          value: overlay2
+        - name: DOCKER_CERT_PATH
+          value: '/var/lib/docker/certs/client'
+        - name: DOCKER_TLS_VERIFY
+          value: '1'
+        volumeMounts:
+        - mountPath: /cache
+          name: cache
+        - mountPath: /build
+          name: build
+        - mountPath: /etc/gitlab-runner
+          name: config
+        # working dir
+        # uid=100, gid=102
+        - mountPath: /var/lib/gitlab-runner
+          name: data
+        #
+        - mountPath: /var/lib/docker/certs/client
+          name: docker-certs
+
+      volumes:
+      - name: cache
+        hostPath:
+          path: /data/ns/dev-system/gitlab-runner-shell/cache
+      - name: build
+        hostPath:
+          path: /data/ns/dev-system/gitlab-runner-shell/build
+      - name: config
+        hostPath:
+          path: /data/ns/dev-system/gitlab-runner-shell/config
+      - name: data
+        hostPath:
+          path: /data/ns/dev-system/gitlab-runner-shell/data
+      #
+      - name: docker-certs
+        hostPath:
+          path: /data/ns/dev-system/dind/data/certs/client
+
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: gitlab-runner-shell
