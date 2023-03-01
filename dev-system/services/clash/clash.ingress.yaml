@@ -1,0 +1,72 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: class-ingress
+spec:
+  rules:
+  - host: proxy.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /ui
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /configs
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /traffic
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /connections
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /proxies
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /rules
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /providers
+      - backend:
+          service:
+            name: clash
+            port:
+              name: dashboard
+        pathType: Prefix
+        path: /logs
+      - backend:
+          service:
+            name: clash
+            port:
+              name: proxy
+        pathType: Prefix
+        path: /

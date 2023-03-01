@@ -103,6 +103,20 @@ kubectl apply -f bootstrap.yaml
   - patches/
 - /charts - local charts to help deploy
 - /dockerfiles - dockerfiles to build adhoc images
+- /data-system
+  - appwrite
+  - supabase
+  - postgres
+  - redis
+- /dev-system
+  - nacos
+  - clash
+  - docker
+    - dind
+    - docker registry
+  - woodpecker
+  - coding-worker
+
 
 **hostPath**
 

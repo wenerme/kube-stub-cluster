@@ -1,0 +1,205 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clash
+  labels:
+    app: clash
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: clash
+      labels:
+        app: clash
+    spec:
+      containers:
+      - name: clash
+        image: wener/clash
+        imagePullPolicy: Always
+        command:
+        - clash
+        - -f
+        - /etc/clash/config.yaml
+        ports:
+        - containerPort: 7890
+          name: proxy
+          hostPort: 1080
+        - containerPort: 9090
+          name: dashboard
+        - containerPort: 7893
+          name: tproxy
+        - containerPort: 53
+          name: dns
+          protocol: UDP
+#          hostPort: 53
+        volumeMounts:
+        - mountPath: /etc/clash
+          name: config
+      volumes:
+      - name: config
+        secret:
+          secretName: clash-config
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: clash
+
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: clash-config
+  labels:
+    app: clash
+stringData:
+  config.yaml: |
+    mixed-port: 7890
+    tproxy-port: 7893
+    bind-address: '*'
+    allow-lan: true
+
+    external-controller: 0.0.0.0:9090
+    secret: yacd
+    #external-ui: clash-dashboard-gh-pages
+    external-ui: yacd
+
+    dns:
+      enable: false
+      listen: 0.0.0.0:53
+      ipv6: false
+      nameserver:
+      - 114.114.114.114
+      - 223.5.5.5
+      fallback:
+      - 1.1.1.1
+      fallback-filter:
+        geoip: true
+        geoip-code: CN
+        ipcidr:
+        - 240.0.0.0/4
+        domain:
+        - '+.google.com'
+        - '+.google.com.hk'
+        - '+.facebook.com'
+        - '+.twitter.com'
+        - '+.youtube.com'
+        - '+.instagram.com'
+        - '+.whatsapp.com'
+        - '+.telegram.org'
+
+    proxies:
+    proxy-groups:
+
+    rules:
+    - IP-CIDR,127.0.0.0/8,REJECT
+    - IP-CIDR,0.0.0.0/8,REJECT
+    - IP-CIDR,100.64.0.0/10,DIRECT
+    - GEOIP,LAN,DIRECT
+
+    # World
+    - DOMAIN-SUFFIX,google.com,proxy
+    - DOMAIN-SUFFIX,googleapis.com,proxy
+    - DOMAIN-SUFFIX,medium.com,proxy
+    - DOMAIN-SUFFIX,quora.com,proxy
+
+    - DOMAIN-SUFFIX,googlevideo.com,bw
+    - DOMAIN-SUFFIX,svc.ms,bw
+    - DOMAIN-SUFFIX,anonfiles.com,bw
+    - DOMAIN-SUFFIX,atum.hac.lp1.d4c.nintendo.net,bw
+    - DOMAIN-SUFFIX,dribbble.com,bw
+    - DOMAIN-SUFFIX,pximg.net,bw
+    - DOMAIN-SUFFIX,twimg.com,bw
+
+    - DOMAIN-SUFFIX,plugins.jetbrains.com,bw
+    - DOMAIN-SUFFIX,codeload.github.com,bw
+    - DOMAIN-SUFFIX,objects.githubusercontent.com,bw
+
+    - DOMAIN-SUFFIX,breached.to,bw
+    - DOMAIN-SUFFIX,cracked.io,bw
+    - DOMAIN-SUFFIX,cracked.to,bw
+
+    - DOMAIN-SUFFIX,clf09.com,bw
+    # Alpine
+    - DOMAIN-SUFFIX,gitlab.alpinelinux.org,bw
+    - DOMAIN-SUFFIX,alpinelinux.org,bw
+    - IP-CIDR,172.105.69.85/32,bw
+
+    - DOMAIN-SUFFIX,linode.com,us
+    - DOMAIN-SUFFIX,flightradar24.com,us
+    - DOMAIN-SUFFIX,patreon.com,us
+
+    # TG
+    - IP-CIDR,149.154.160.0/20,us
+    - IP-CIDR,185.76.151.0/24,us
+    - IP-CIDR,91.105.192.0/23,us
+    - IP-CIDR,91.108.12.0/22,us
+    - IP-CIDR,91.108.16.0/22,us
+    - IP-CIDR,91.108.20.0/22,us
+    - IP-CIDR,91.108.4.0/22,us
+    - IP-CIDR,91.108.56.0/22,us
+    - IP-CIDR,91.108.8.0/22,us
+
+    # Cloudflare IPv4,Direct
+    - IP-CIDR,103.21.244.0/22,DIRECT
+    - IP-CIDR,103.22.200.0/22,DIRECT
+    - IP-CIDR,103.31.4.0/22,DIRECT
+    - IP-CIDR,104.16.0.0/13,DIRECT
+    - IP-CIDR,104.24.0.0/14,DIRECT
+    - IP-CIDR,108.162.192.0/18,DIRECT
+    - IP-CIDR,131.0.72.0/22,DIRECT
+    - IP-CIDR,141.101.64.0/18,DIRECT
+    - IP-CIDR,162.158.0.0/15,DIRECT
+    - IP-CIDR,172.64.0.0/13,DIRECT
+    - IP-CIDR,173.245.48.0/20,DIRECT
+    - IP-CIDR,188.114.96.0/20,DIRECT
+    - IP-CIDR,190.93.240.0/20,DIRECT
+    - IP-CIDR,197.234.240.0/22,DIRECT
+    - IP-CIDR,198.41.128.0/17,DIRECT
+    # Cloudflare IPv6,Direct
+    - IP-CIDR6,2400:cb00::/32,DIRECT
+    - IP-CIDR6,2606:4700::/32,DIRECT
+    - IP-CIDR6,2803:f800::/32,DIRECT
+    - IP-CIDR6,2405:b500::/32,DIRECT
+    - IP-CIDR6,2405:8100::/32,DIRECT
+    - IP-CIDR6,2a06:98c0::/29,DIRECT
+    - IP-CIDR6,2c0f:f248::/32,DIRECT
+
+    # China
+    - DOMAIN-SUFFIX,taobao.com,DIRECT
+    - DOMAIN-SUFFIX,netease.com,DIRECT
+    - DOMAIN-SUFFIX,163.com,DIRECT
+    - DOMAIN-SUFFIX,126.net,DIRECT
+    - DOMAIN-SUFFIX,weibo.cn,DIRECT
+    - DOMAIN-SUFFIX,weibo.com,DIRECT
+    - DOMAIN-SUFFIX,qq.com,DIRECT
+    - DOMAIN-SUFFIX,jdapi.com,DIRECT
+    - GEOIP,CN,DIRECT
+
+
+    # default
+    - MATCH,proxy
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: clash
+  labels:
+    app: clash
+spec:
+  selector:
+    app: clash
+  ports:
+  - port: 7890
+    targetPort: proxy
+    name: proxy
+  - port: 80
+    targetPort: dashboard
+    name: dashboard

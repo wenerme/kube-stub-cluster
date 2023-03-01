@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: redis
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: redis
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7
+        imagePullPolicy: IfNotPresent
+        command:
+        - redis-server
+        - /etc/redis/redis.conf
+        ports:
+        - containerPort: 6379
+          name: redis
+        volumeMounts:
+        - name: conf
+          mountPath: /etc/redis
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: conf
+        configMap:
+          name: redis-config
+      - name: data
+        hostPath:
+          path: /data/ns/data-system/redis/data
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: redis
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    name: redis
+    targetPort: redis

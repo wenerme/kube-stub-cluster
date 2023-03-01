@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coding-worker
+  labels:
+    app: coding-worker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: coding-worker
+      labels:
+        app: coding-worker
+    spec:
+      containers:
+      - name: coding-worker
+        image: wener/coding-net:worker
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DOCKER_HOST
+          # tls 2356
+          # non-tls 2355
+          value: tcp://docker:2376
+        - name: DOCKER_DRIVER
+          value: overlay2
+        # non-tls
+        # DOCKER_TLS_CERTDIR=''
+        - name: DOCKER_CERT_PATH
+          value: '/var/lib/docker/certs/client'
+        - name: DOCKER_TLS_VERIFY
+          value: '1'
+        volumeMounts:
+        - mountPath: /cache
+          name: cache
+        - mountPath: /root/.m2/
+          name: cache
+          subPath: .m2
+        - mountPath: /root/.npm/
+          name: cache
+          subPath: .npm
+        - mountPath: /root/.cache/
+          name: cache
+          subPath: .cache
+        - mountPath: /root/.gradle/
+          name: cache
+          subPath: .gradle
+        - mountPath: /var/lib/docker/certs/client
+          name: docker-certs
+        # todo /etc/qci.conf
+      volumes:
+      - name: cache
+        hostPath:
+          path: /data/ns/dev-system/coding-worker/cache
+      - name: docker-certs
+        hostPath:
+          path: /data/ns/dev-system/dind/data/certs/client
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: coding-worker
+
+# sudo mkdir /data/ns/dev-system/coding-worker/cache -p

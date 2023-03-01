@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nacos
+spec:
+  rules:
+  - host: nacos.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nacos-headless
+            port:
+              name: server
+      - path: /Request
+        pathType: Prefix
+        backend:
+          service:
+            name: nacos-headless
+            port:
+              name: client-rpc
+      - path: /BiRequestStream
+        pathType: Prefix
+        backend:
+          service:
+            name: nacos-headless
+            port:
+              name: client-rpc
+  tls:
+  - hosts:
+    - nacos.example.com

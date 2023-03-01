@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  labels:
+    app: redis
+data:
+  redis.conf: |
+    dir /data
+    appendonly yes
+    save 60 1000
+    aclfile /etc/redis/users.acl
+  # Redis 6+ ACL username and password
+  # nopass -> #SHA256
+  users.acl: |
+    user default nopass on ~* &* +@all
+
+# user default off
+# uuidgen | tee /dev/fd/2 | tr -d '[:space:]' | sha256sum
