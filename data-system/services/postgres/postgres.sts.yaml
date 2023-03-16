@@ -25,8 +25,8 @@ spec:
         env:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
-        #- name: POSTGRES_PASSWORD
-        #  value: $(uuidgen)
+        - name: POSTGRES_PASSWORD
+          value: $(POSTGRES_PASSWORD)
         volumeMounts:
         - mountPath: /var/lib/postgresql/data/pgdata
           name: data

@@ -1,0 +1,69 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  # websocket 不支持 wss, 不能加 tls
+  name: frps
+  labels:
+    app: frps
+spec:
+  rules:
+  - host: "frp.example.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frps
+            port:
+              name: http
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frps-dashboard
+  labels:
+    app: frps
+spec:
+  rules:
+  - host: "dashboard.frp.example.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frps
+            port:
+              name: dashboard
+  tls:
+  - hosts:
+    - "*.frp.example.com"
+    secretName: frp-example-com-cert
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frps-subdomain
+  labels:
+    app: frps
+spec:
+  rules:
+  - host: "*.frp.example.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frps
+            port:
+              name: http
+  tls:
+  - hosts:
+    - "*.frp.example.com"
+    secretName: frp-example-com-cert

@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frps
+  labels:
+    app: frps
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: frps
+      labels:
+        app: frps
+    spec:
+      containers:
+      - name: frps
+        image: wener/frps:0.44.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        - containerPort: 7500
+          name: dashboard
+        envFrom:
+        - secretRef:
+            name: frps-env
+        volumeMounts:
+        - mountPath: /etc/frp/frps.ini
+          name: conf
+          subPath: frps.ini
+      volumes:
+      - name: conf
+        configMap:
+          name: frps-conf
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: frps
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frps-conf
+data:
+  frps.ini: |
+    [common]
+    bind_addr = 0.0.0.0
+    bind_port = 80
+    kcp_bind_port = 80
+    vhost_http_port = 80
+    vhost_https_port = 443
+    dashboard_addr = 0.0.0.0
+    dashboard_port = 7500
+    bind_udp_port = 7001
+
+    enable_prometheus = true
+
+    dashboard_user=admin
+    dashboard_pwd={{.Envs.frps_dashboard_pwd}}
+    token={{.Envs.frps_token}}
+    # subdomain_host = frp.example.com
+    subdomain_host={{.Envs.frps_subdomain_host}}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frps
+spec:
+  selector:
+    app: frps
+  ports:
+  - port: 80
+    name: http
+    targetPort: http
+  - port: 443
+    name: https
+    targetPort: https
+  - port: 7500
+    name: dashboard
+    targetPort: dashboard

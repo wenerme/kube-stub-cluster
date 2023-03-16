@@ -75,7 +75,7 @@ kubectl get events -w --all-namespaces
 make nodes # config works
 
 cd argocd
-make apply
+make ns apply
 
 cd -
 

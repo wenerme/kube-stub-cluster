@@ -51,6 +51,9 @@ info: ## show current context - NAMESPACE, CONTEXT
 	@echo helm: $(HELM)
 	@echo kubeseal: $(KUBESEAL)
 
+.PHONEY: ns always
+always:
+
 build: $(wildcard kustomization.yaml) $(wildcard values.yaml) ## build yaml
 	! [ -e build.sh ] || sh ./build.sh
 	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
@@ -72,7 +75,7 @@ up-verify-server: up verify-server
 up-build: up build
 
 
-SEAL_PATTERN ?= .*
+SEAL_PATTERN ?= ".*"
 seal: ## seal all secret to sealed
 	@mkdir -p templates
 	@ls *.secret.yaml | grep -E "$(SEAL_PATTERN)" | tee -a /dev/fd/2 | xargs -I {} sh -c '$(KUBESEAL) -f {} -o yaml > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
@@ -88,9 +91,17 @@ clean: ## Cleanup charts & build
 	rm -rf build.ignored.yaml
 	rm -rf charts
 
+ns: ## create namespace
+	$(KUBECTL) create ns $(NAMESPACE)
+
+images: build
+	grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/'
+
 nodes: ## show nodes in cluster for verify config
 	$(KUBECTL) get nodes
 
+events: ## show events in cluster
+	$(KUBECTL) get events -Aw
 
 help: ## Show this help
 	@grep -E -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

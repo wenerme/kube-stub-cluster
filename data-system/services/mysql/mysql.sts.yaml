@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  serviceName: mysql
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      initContainers:
+      - name: take-data-dir-ownership
+        image: alpine
+        command:
+        - chown
+        - -R
+        - 1000:1000
+        - /data
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      containers:
+      - name: mysql
+        image: mysql:8.0.32
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsGroup: 1000
+          runAsUser: 1000
+        args:
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        - --max-connections=2000
+        ports:
+        - containerPort: 3306
+          name: mysql
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: MYSQL_ROOT_HOST
+          value: '%'
+        - name: MYSQL_ROOT_PASSWORD
+          value: $(MYSQL_ROOT_PASSWORD)
+
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/data-system/mysql/data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+  - port: 3306
+    name: mysql
+    targetPort: mysql
+

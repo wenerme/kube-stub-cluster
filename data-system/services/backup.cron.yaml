@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mysql-backup
+  labels:
+    app: mysql
+spec:
+  schedule: "0 8,20 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: mysql-backup
+            image: wener/base@sha256:dc5ed3a4c56fb194904558bf68f4ff2c48c4b3fc3ebd9fbf82e96c1f548bead3
+            imagePullPolicy: IfNotPresent
+            command:
+            - bash
+            - -c
+            - |
+              set -ex
+              apk add rsync
+              ver=$(date -u +%Y-%m-%dT%H:%m:%S%z)
+              rsync -avP /from/ /backup/$ver/
+              echo $ver > /backup/latest
+              ls -d /backup/*
+              # keep last 10 version
+              ls -d /backup/* | sort -r | tail -n +10 | xargs rm -rf
+            volumeMounts:
+            - mountPath: /from
+              name: from
+            - mountPath: /backup
+              name: backup
+          volumes:
+          - name: from
+            hostPath:
+              path: /data/ns/data-system/mysql/
+          - name: backup
+            hostPath:
+              path: /data/backup/data-system/mysql/
