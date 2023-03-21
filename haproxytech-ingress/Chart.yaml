@@ -4,6 +4,6 @@ version: 1.0.0
 
 dependencies:
 - name: kubernetes-ingress
-  version: 1.24.0
+  version: 1.29.2
   repository: https://charts.wener.tech/haproxytech
   alias: haproxytech-ingress

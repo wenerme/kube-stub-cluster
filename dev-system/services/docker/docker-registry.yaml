@@ -19,16 +19,34 @@ spec:
         ports:
         - containerPort: 5000
           name: registry
+        - containerPort: 5001
+          name: debug
+        startupProbe:
+          httpGet:
+            port: registry
+            path: /v2/
         # https://docs.docker.com/registry/deploying/
-        # REGISTRY_HTTP_ADDR=0.0.0.0:5000
+        # https://docs.docker.com/registry/configuration/
         # REGISTRY_HTTP_TLS_CERTIFICATE
         # REGISTRY_HTTP_TLS_KEY
         # REGISTRY_AUTH=htpasswd
         # "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"
         # REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
         env:
+        # 配置 remoteurl 后不能 push
+        # https://github.com/distribution/distribution/issues/2386
         - name: REGISTRY_PROXY_REMOTEURL
           value: https://registry-1.docker.io
+        - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+          value: /var/lib/registry
+        - name: REGISTRY_HTTP_ADDR
+          value: :5000
+        #- name: REGISTRY_HTTP_HOST
+        #  value: https://cr.example.com
+        - name: REGISTRY_HTTP_DEBUG_ADDR
+          value: :5001
+        - name: REGISTRY_HTTP_DEBUG_PROMETHEUS_ENABLED
+          value: "true"
         volumeMounts:
         - mountPath: /var/lib/registry
           name: data
@@ -54,3 +72,6 @@ spec:
   - port: 5000
     name: registry
     targetPort: registry
+  - port: 5001
+    name: debug
+    targetPort: debug

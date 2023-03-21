@@ -5,13 +5,13 @@ kind: Kustomization
 resources:
 - install.yaml
 
-images:
-- name: ghcr.io/dexidp/dex
-  newName: registry.cn-hongkong.aliyuncs.com/cmi/dexidp_dex
-- name: argoproj/argocd
-  newName: registry.cn-hongkong.aliyuncs.com/cmi/argoproj_argocd
-- name: quay.io/argoproj/argocd
-  newName: registry.cn-hongkong.aliyuncs.com/cmi/argoproj_argocd
+#images:
+#- name: ghcr.io/dexidp/dex
+#  newName: registry.cn-hongkong.aliyuncs.com/cmi/dexidp_dex
+#- name: argoproj/argocd
+#  newName: registry.cn-hongkong.aliyuncs.com/cmi/argoproj_argocd
+#- name: quay.io/argoproj/argocd
+#  newName: registry.cn-hongkong.aliyuncs.com/cmi/argoproj_argocd
 
 patches:
 - target:

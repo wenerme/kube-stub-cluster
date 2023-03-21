@@ -7,35 +7,44 @@ metadata:
 spec:
   containers:
   - name: docker
-    image: docker:git
+    image: wener/docker
     imagePullPolicy: IfNotPresent
     command:
     - tail
     - -f
     - /dev/null
     env:
-    - name: DOCKER_HOST
-      # tls 2356
-      # non-tls 2355
-      value: tcp://docker:2376
+    # 用 sock 避免 context create 失败 https://github.com/docker/buildx/issues/413
+    # 2355, tls 2356
+    #- name: DOCKER_HOST
+    #  value: tcp://docker:2376
+    # non-tls
+    #- name: DOCKER_TLS_CERTDIR
+    #  value: ''
+    # tls
+    #- name: DOCKER_CERT_PATH
+    #  value: '/var/lib/docker/certs/client'
+    #- name: DOCKER_TLS_VERIFY
+    #  value: '1'
     - name: DOCKER_DRIVER
       value: overlay2
-    # non-tls
-    # DOCKER_TLS_CERTDIR=''
-    - name: DOCKER_CERT_PATH
-      value: '/var/lib/docker/certs/client'
-    - name: DOCKER_TLS_VERIFY
-      value: '1'
     volumeMounts:
     - mountPath: /var/lib/docker/certs/client
       name: certs
+    - mountPath: /var/run/docker.sock
+      name: docker-sock
   volumes:
   - name: certs
     hostPath:
       path: /data/ns/dev-system/dind/data/certs/client
+  - name: docker-sock
+    hostPath:
+      path: /data/ns/dev-system/dind/run/docker.sock
+      type: Socket
   restartPolicy: Always
 
 # Test
 # docker pull wener/base
 # docker tag wener/base docker-registry:5000/wener_base
+# 开启了 remoteurl 会失败
 # docker push docker-registry:5000/wener_base

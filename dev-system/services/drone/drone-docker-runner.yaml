@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: drone-docker-runner
+  labels:
+    app: drone-docker-runner
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: drone-docker-runner
+      labels:
+        app: drone-docker-runner
+    spec:
+      containers:
+      - name: drone-docker-runner
+        # image: drone/drone-runner-docker:1.8.3
+        # imagePullPolicy: IfNotPresent
+        image: drone/drone-runner-docker:latest
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        envFrom:
+        - secretRef:
+            name: drone-docker-runner-env
+        ports:
+        - containerPort: 3000
+          name: web
+        volumeMounts:
+        - mountPath: /data
+          name: data
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+          readOnly: false
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/dev-system/drone-docker-runner/data
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: drone-docker-runner
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: drone-docker-runner
+spec:
+  selector:
+    app: drone-docker-runner
+  ports:
+  - port: 80
+    targetPort: web
+    name: web
+

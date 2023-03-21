@@ -18,6 +18,25 @@ spec:
       - name: postgres
         image: postgres:15.2-alpine
         imagePullPolicy: IfNotPresent
+        # https://pgtune.leopard.in.ua/
+        # WebApp 8C32G 1000 Conn
+        args:
+        - -cmax_connections=1000
+        - -cshared_buffers=8GB
+        - -ceffective_cache_size=24GB
+        - -cmaintenance_work_mem=2GB
+        - -ccheckpoint_completion_target=0.9
+        - -cwal_buffers=16MB
+        - -cdefault_statistics_target=100
+        - -crandom_page_cost=4
+        - -ceffective_io_concurrency=2
+        - -cwork_mem=2097kB
+        - -cmin_wal_size=1GB
+        - -cmax_wal_size=4GB
+        - -cmax_worker_processes=8
+        - -cmax_parallel_workers_per_gather=4
+        - -cmax_parallel_workers=8
+        - -cmax_parallel_maintenance_workers=4
         ports:
         - containerPort: 5432
           name: postgres
@@ -50,4 +69,3 @@ spec:
   - port: 5432
     name: postgres
     targetPort: postgres
-

@@ -6,6 +6,8 @@ metadata:
     app: dind
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       name: dind
@@ -25,24 +27,36 @@ spec:
         - http://docker-registry:5000
         - --registry-mirror
         - https://registry-1.docker.io
+        - --experimental
         ports:
         - containerPort: 2375
           name: docker
         - containerPort: 2376
           name: dockers
+        startupProbe:
+          exec:
+            command:
+            - docker
+            - info
         env:
-        # 设置为 空 则不验证
+        # 设置为 空 则为 non tls
         - name: DOCKER_TLS_CERTDIR
           value: '/var/lib/docker/certs'
+          #value: ''
         volumeMounts:
         - mountPath: /var/lib/docker
           name: data
+        - mountPath: /var/run/
+          name: run
         - mountPath: /cache
           name: cache
       volumes:
       - name: data
         hostPath:
           path: /data/ns/dev-system/dind/data
+      - name: run
+        hostPath:
+          path: /data/ns/dev-system/dind/run
       - name: cache
         hostPath:
           path: /data/ns/dev-system/dind/cache

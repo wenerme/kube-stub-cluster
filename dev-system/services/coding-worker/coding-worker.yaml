@@ -1,62 +1,75 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: coding-worker
+  name: coding-net-worker
   labels:
-    app: coding-worker
+    app: coding-net-worker
 spec:
   replicas: 1
   template:
     metadata:
-      name: coding-worker
+      name: coding-net-worker
       labels:
-        app: coding-worker
+        app: coding-net-worker
     spec:
       containers:
-      - name: coding-worker
+      - name: coding-net-worker
         image: wener/coding-net:worker
         imagePullPolicy: IfNotPresent
         env:
-        - name: DOCKER_HOST
-          # tls 2356
-          # non-tls 2355
-          value: tcp://docker:2376
+        # 2355, tls 2356
+        #- name: DOCKER_HOST
+        #  value: tcp://docker:2376
+        # non-tls
+        #- name: DOCKER_TLS_CERTDIR
+        #  value: ''
+        # tls
+        #- name: DOCKER_CERT_PATH
+        #  value: '/var/lib/docker/certs/client'
+        #- name: DOCKER_TLS_VERIFY
+        #  value: '1'
         - name: DOCKER_DRIVER
           value: overlay2
-        # non-tls
-        # DOCKER_TLS_CERTDIR=''
-        - name: DOCKER_CERT_PATH
-          value: '/var/lib/docker/certs/client'
-        - name: DOCKER_TLS_VERIFY
-          value: '1'
         volumeMounts:
         - mountPath: /cache
           name: cache
-        - mountPath: /root/.m2/
-          name: cache
-          subPath: .m2
-        - mountPath: /root/.npm/
-          name: cache
-          subPath: .npm
-        - mountPath: /root/.cache/
-          name: cache
-          subPath: .cache
-        - mountPath: /root/.gradle/
-          name: cache
-          subPath: .gradle
+        - mountPath: /root/
+          name: home
+        #- mountPath: /root/.m2/
+        #  name: cache
+        #  subPath: .m2
+        #- mountPath: /root/.npm/
+        #  name: cache
+        #  subPath: .npm
+        #- mountPath: /root/.cache/
+        #  name: cache
+        #  subPath: .cache
+        #- mountPath: /root/.gradle/
+        #  name: cache
+        #  subPath: .gradle
         - mountPath: /var/lib/docker/certs/client
           name: docker-certs
-        # todo /etc/qci.conf
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+        # todo qci.conf
       volumes:
+      - name: home
+        hostPath:
+          path: /data/ns/dev-system/coding-net-worker/home
       - name: cache
         hostPath:
-          path: /data/ns/dev-system/coding-worker/cache
+          path: /data/ns/dev-system/coding-net-worker/cache
+      # tls
       - name: docker-certs
         hostPath:
           path: /data/ns/dev-system/dind/data/certs/client
+      - name: docker-sock
+        hostPath:
+          path: /data/ns/dev-system/dind/run/docker.sock
+          type: Socket
       restartPolicy: Always
   selector:
     matchLabels:
-      app: coding-worker
+      app: coding-net-worker
 
-# sudo mkdir /data/ns/dev-system/coding-worker/cache -p
+# sudo mkdir /data/ns/dev-system/coding-net-worker/cache -p
