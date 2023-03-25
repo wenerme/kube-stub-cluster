@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: verdaccio
+  labels:
+    app: verdaccio
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: verdaccio
+      labels:
+        app: verdaccio
+    spec:
+      containers:
+      - name: verdaccio
+        image: verdaccio/verdaccio:5.22
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: web
+        livenessProbe:
+          httpGet:
+            path: /-/ping
+            port: web
+        env:
+        - name: VERDACCIO_PORT
+          value: '8080'
+        volumeMounts:
+        - mountPath: /verdaccio/storage
+          name: storage
+          readOnly: false
+        - mountPath: /verdaccio/conf
+          name: config
+          readOnly: true
+      volumes:
+      - name: storage
+        hostPath:
+          path: /data/ns/dev-system/verdaccio/storage
+      - name: config
+        configMap:
+          name: verdaccio-config
+      securityContext:
+        runAsUser: 10001
+        fsGroup: 10001
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: verdaccio
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: verdaccuio
+  labels:
+    app: verdaccuio
+spec:
+  selector:
+    app: verdaccuio
+  ports:
+  - port: 80
+    name: web
+    targetPort: web

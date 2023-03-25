@@ -20,13 +20,12 @@ spec:
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
+        # lower mtu to avoid network problem
         args:
-        - --insecure-registry
-        - docker-registry:5000
-        - --registry-mirror
-        - http://docker-registry:5000
-        - --registry-mirror
-        - https://registry-1.docker.io
+        - --insecure-registry=docker-registry:5000
+        - --registry-mirror=http://docker-registry:5000
+        - --registry-mirror=https://registry-1.docker.io
+        - --mtu=1400
         - --experimental
         ports:
         - containerPort: 2375

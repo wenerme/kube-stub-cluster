@@ -72,9 +72,9 @@ kubectl get events -w --all-namespaces
 **Bootstrap**
 
 ```bash
-make nodes # config works
-
 cd argocd
+
+make nodes # config works
 make ns apply
 
 cd -

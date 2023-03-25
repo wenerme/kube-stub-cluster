@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: verdaccuio
+  labels:
+    app: verdaccuio
+spec:
+  rules:
+  - host: npm.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: verdaccio
+            port:
+              name: web
+        pathType: Prefix
+        path: /
+  tls:
+  - hosts:
+    - '*.example.com'
+    secretName: example-com-cert

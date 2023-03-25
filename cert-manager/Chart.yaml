@@ -2,7 +2,7 @@ name: cert-manager
 apiVersion: v2
 dependencies:
 - name: cert-manager
-  version: v1.10.0
+  version: v1.11.0
   repository: https://charts.wener.tech
 
 version: 1.0.0

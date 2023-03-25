@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: prefetch
+  labels:
+    app: prefetch
+spec:
+  selector:
+    matchLabels:
+      app: prefetch
+  template:
+    metadata:
+      labels:
+        app: prefetch
+    spec:
+      containers:
+      - { name: a , image: ghcr.io/dexidp/dex:v2.35.3, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      - { name: b , image: quay.io/argoproj/argocd:v2.6.6, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      - { name: c , image: gitea/gitea:1.18.5, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      - { name: d , image: supabase/postgres:15.1.0.55, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
