@@ -16,8 +16,9 @@ spec:
     spec:
       containers:
       - name: woodpecker
-        image: woodpeckerci/woodpecker-server:latest-alpine
-        # imagePullPolicy: Always
+        #image: woodpeckerci/woodpecker-server:v0.15.7-alpine
+        image: woodpeckerci/woodpecker-server:next-3a475ce210-alpine
+        imagePullPolicy: IfNotPresent
         env:
         - name: TZ
           value: Asia/Shanghai
@@ -29,9 +30,14 @@ spec:
           name: web
         - containerPort: 9000
           name: grpc
+        startupProbe:
+          httpGet:
+            port: web
+            path: /version
         volumeMounts:
         - mountPath: /var/lib/woodpecker/
           name: data
+          # woodpecker.sqlite
       volumes:
       - name: data
         hostPath:

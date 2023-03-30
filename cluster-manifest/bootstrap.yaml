@@ -1,22 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: manifests
+  name: cluster-manifest
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: argocd
+    namespace: cluster-manifest
     server: 'https://kubernetes.default.svc'
   project: default
   source:
-    path: manifests
+    path: cluster-manifest
     repoURL: 'https://github.com/wenerme/kube-stub-cluster.git'
     targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
+      selfHeal: true
     syncOptions:
     - CreateNamespace=true
     - SkipDryRunOnMissingResource=true

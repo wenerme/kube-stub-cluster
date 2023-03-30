@@ -10,6 +10,8 @@ metadata:
 data:
   application.resourceTrackingMethod: annotation
   ga.trackingid: ''
+  # web terminal
+  exec.enabled: "false"
 
 # prefer secret
 # repositories: |

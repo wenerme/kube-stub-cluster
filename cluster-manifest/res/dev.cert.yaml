@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dev.example.com
+spec:
+  secretName: dev-example-com-cert
+  dnsNames:
+  - dev.example.com
+  - '*.dev.example.com'
+  issuerRef:
+    group: cert-manager.io
+    kind: Issuer
+    name: letsencrypt
+  usages:
+  - digital signature
+  - key encipherment
+  secretTemplate:
+    annotations:
+      kubed.appscode.com/sync: syncer/dev-example-com-cert=true

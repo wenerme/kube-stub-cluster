@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/secure-backends: "true"
 spec:
   rules:
-  - host: kubernetes.example.com
+  - host: kube.example.com
     http:
       paths:
       - backend:

@@ -37,3 +37,7 @@ ignored*
 *.tgz
 Chart.lock
 *.ignored.*
+.env.local
+*.local
+kubeconfig.yaml
+*.kubeconfig.yaml

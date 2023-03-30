@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguardhome
+spec:
+  rules:
+  - host: adguard.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: adguardhome
+            port:
+              name: http
+        pathType: Prefix
+        path: /
+  tls:
+  - hosts:
+    - 'example.com'
+    secretName: example-com-cert

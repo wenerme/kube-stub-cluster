@@ -91,6 +91,11 @@ kubectl apply -f bootstrap.yaml
 # modify kustomization.yaml as needed
 ```
 
+```bash
+# generate key for argocd
+ssh-keygen -t ed25519 -C "$(basename $PWD)" -f argocd -q -N ""
+```
+
 **Structure**
 
 - /argocd

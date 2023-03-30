@@ -1,5 +1,5 @@
 apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
+kind: Issuer
 metadata:
   name: letsencrypt
 spec:
@@ -8,6 +8,9 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-account
     solvers:
-    - http01:
-        ingress: { }
-
+    - dns01:
+        acmeDNS:
+          host: https://auth.acme-dns.io
+          accountSecretRef:
+            name: acme-dns
+            key: acme-dns.json

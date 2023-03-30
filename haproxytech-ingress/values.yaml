@@ -4,10 +4,14 @@ haproxytech-ingress:
     ingressClassResource:
       name: haproxy
       default: false
+    # https://github.com/haproxytech/kubernetes-ingress/blob/master/documentation/controller.md
     extraArgs:
-    # default to ingress
-    # - --default-backend-service=ingress-nginx/ingress-nginx-controller
-    # Deployment can rolling update - DaemonSet can reduce routing
+    # used as default ingress
+    - --empty-ingress-class
+    # use default-backend-service can chain ingress
+    #- --default-backend-service=ingress-nginx/ingress-nginx-controller
+    # Deployment can rolling update, zero downtime, but can not use hostPort
+    # DaemonSet can reduce routing, can use hostPort
     kind: DaemonSet
     replicaCount: 1
     daemonset:

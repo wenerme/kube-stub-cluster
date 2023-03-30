@@ -2,22 +2,21 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-- cluster/sealed-secrets.yaml
-- cluster/kubed.yaml
-- cluster/cert-manager.yaml
-- cluster/reloader.yaml
-- ./storage/openebs.yaml
+# Minimal Base
+- services/argocd.yaml
+- services/kubed.yaml
+- services/cert-manager.yaml
+- services/reloader.yaml
+- services/haproxytech-ingress.yaml
+- res/cluster/letsencrypt.ci.yaml
+- res/cluster/letsencrypt-staging.ci.yaml
+
 #
-- ./networking/metallb.yaml
-- ./networking/haproxytech-ingress.yaml
+- services/metallb.yaml
 #
-- ./res/repo-kube-stub-cluster.yaml
+- res/repo-kube-stub-cluster.yaml
 #
-- ./res/letsencrypt.ci.yaml
-- ./res/letsencrypt-staging.ci.yaml
-#- ./res/buypass.ci.yaml
-#- ./res/buypass-staging.ci.yaml
-#- ./res/zerossl.ci.yaml
+
 
 
 patches:

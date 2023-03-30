@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adguardhome
+  labels:
+    app: adguardhome
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: adguardhome
+    spec:
+      containers:
+      - name: adguardhome
+        image: adguard/adguardhome:v0.107.24
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 53
+          protocol: UDP
+          hostPort: 53
+        - containerPort: 53
+          protocol: TCP
+        - containerPort: 67
+          protocol: UDP
+        - containerPort: 68
+          protocol: UDP
+        - containerPort: 443
+          protocol: UDP
+        - containerPort: 784
+          protocol: UDP
+        - containerPort: 853
+          protocol: UDP
+        - containerPort: 8853
+          protocol: UDP
+        - containerPort: 5443
+          protocol: UDP
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        - containerPort: 3000
+        volumeMounts:
+        - mountPath: /opt/adguardhome/conf
+          name: conf
+        - mountPath: /opt/adguardhome/work
+          name: work
+      volumes:
+      - name: conf
+        hostPath:
+          path: /data/ns/dev-system/adguardhome/conf
+      - name: work
+        hostPath:
+          path: /data/ns/dev-system/adguardhome/work
+      restartPolicy: Always
+      hostname: adguardhome
+  selector:
+    matchLabels:
+      app: adguardhome
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: adguardhome
+spec:
+  selector:
+    app: adguardhome
+  ports:
+  - port: 80
+    targetPort: http
+    name: http
