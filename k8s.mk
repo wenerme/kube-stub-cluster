@@ -51,7 +51,7 @@ info: ## show current context - NAMESPACE, CONTEXT
 	@echo helm: $(HELM)
 	@echo kubeseal: $(KUBESEAL)
 
-.PHONEY: ns always
+.PHONY: ns always
 always:
 
 build: $(wildcard kustomization.yaml) $(wildcard values.yaml) ## build yaml

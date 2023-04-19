@@ -14,7 +14,14 @@ spec:
         app: prefetch
     spec:
       containers:
-      - { name: a , image: ghcr.io/dexidp/dex:v2.35.3, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
-      - { name: b , image: quay.io/argoproj/argocd:v2.6.6, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
-      - { name: c , image: gitea/gitea:1.18.5, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
-      - { name: d , image: supabase/postgres:15.1.0.55, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      # make images
+      # argocd
+      - { name: a1 , image: ghcr.io/dexidp/dex:v2.35.3, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      - { name: a2 , image: quay.io/argoproj/argocd:v2.6.6, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      - { name: a3 , image: redis:7.0.8-alpine, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      # haproxy
+      - { name: haproxy , image: haproxytech/kubernetes-ingress:1.9.0, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      # gitea
+      - { name: gitea , image: gitea/gitea:1.19.0, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }
+      # supabase/postgres
+      - { name: spg , image: supabase/postgres:15.1.0.55, imagePullPolicy: IfNotPresent, command: [ "tail", "-f", "/dev/null" ] }

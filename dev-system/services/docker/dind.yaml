@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: dind
-        image: docker:23.0.1-dind-alpine3.17
+        image: docker:23.0.3-dind-alpine3.17
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
@@ -27,7 +27,7 @@ spec:
         # lower mtu to avoid network problem
         - --mtu=1400
         - --experimental
-        #- --tls=false
+        - --tls=false
         #- --tlsverify=false
         ports:
         - containerPort: 2375
