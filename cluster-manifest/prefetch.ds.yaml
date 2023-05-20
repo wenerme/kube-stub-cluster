@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: prefetch
+  namespace: cluster-manifest
   labels:
     app: prefetch
 spec:

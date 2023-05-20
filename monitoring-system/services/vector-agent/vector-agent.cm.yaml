@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vector-agent
+  labels:
+    app: vector-agent
+data:
+  agent.yaml: |
+    data_dir: /vector-data-dir
+    api:
+      enabled: true
+      address: 127.0.0.1:8686
+      playground: false
+    sources:
+      kubernetes_logs:
+        type: kubernetes_logs
+      host_metrics:
+        filesystem:
+          devices:
+            excludes: [ binfmt_misc ]
+          filesystems:
+            excludes: [ binfmt_misc ]
+          mountPoints:
+            excludes: [ "*/proc/sys/fs/binfmt_misc" ]
+        type: host_metrics
+      internal_metrics:
+        type: internal_metrics
+    sinks:
+      prom_exporter:
+        type: prometheus_exporter
+        inputs: [ host_metrics, internal_metrics ]
+        address: 0.0.0.0:9090
+      zinc_metrics:
+        type: prometheus_remote_write
+        inputs: [ host_metrics, internal_metrics ]
+        endpoint: http://zincobserve:5080/api/default/prometheus/api/v1/write
+        auth:
+          strategy: basic
+          user: "${ZO_USER}"
+          password: "${ZO_PASSWORD}"
+        healthcheck:
+          enabled: false
+      zinc_logs:
+        type: http
+        inputs: [ kubernetes_logs ]
+        uri: http://zincobserve:5080/api/default/default/_json
+        method: post
+        compression: gzip
+        auth:
+          strategy: basic
+          user: "${ZO_USER}"
+          password: "${ZO_PASSWORD}"
+        encoding:
+          codec: json
+          timestamp_format: rfc3339
+        healthcheck:
+          enabled: false

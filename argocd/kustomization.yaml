@@ -17,6 +17,16 @@ patches:
 - target:
     name: argocd-cm
   path: patches/argocd-cm.yaml
+# add exec
+- target:
+    kind: Role
+    name: argocd-server
+  path: patches/argocd-server.role.yaml
+- target:
+    kind: ClusterRole
+    name: argocd-server
+  path: patches/argocd-server.cr.yaml
+
 # unify cluster, project and repo
 #- target:
 #    kind: Application
