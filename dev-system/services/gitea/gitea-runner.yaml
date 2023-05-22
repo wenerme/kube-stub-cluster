@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-runner
+  labels:
+    app: gitea-runner
+spec:
+  selector:
+    app: gitea-runner
+  type: ClusterIP
+  clusterIP: None
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: gitea-runner
+  labels:
+    app: gitea-runner
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: gitea-runner
+  serviceName: gitea-runner
+  template:
+    metadata:
+      labels:
+        app: gitea-runner
+    spec:
+      containers:
+      - name: gitea-runner
+        image: quay.io/wener/gitea-runner:3.18
+        imagePullPolicy: Always
+        env:
+        - name: GITEA_INSTANCE_URL
+          value: http://gitea
+        - name: GITEA_RUNNER_LABELS
+          value: ubuntu-latest:docker://wener/node:18,alpine-latest:docker://wener/node:18,alpine-exec:host
+        - name: GITEA_RUNNER_ACTION_CACHE_DIR
+          value: /cache/actions
+        - name: ACT_CACHE_SERVER_DIR
+          value: /cache/server
+        - name: CONFIG_FILE
+          value: /etc/gitea/runner/config.yaml
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        envFrom:
+        - secretRef:
+            name: gitea-runner-env
+        volumeMounts:
+        - mountPath: /cache
+          name: cache
+        - mountPath: /data
+          name: data
+          subPathExpr: $(POD_NAME)
+        - mountPath: /root/.cache
+          name: data
+          subPathExpr: $(POD_NAME)/cache
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
+        - mountPath: /etc/gitea/runner
+          name: conf
+      volumes:
+      - name: conf
+        configMap:
+          name: gitea-runner-conf
+      - name: data
+        hostPath:
+          path: /data/ns/dev-system/gitea-runner/data
+          type: DirectoryOrCreate
+      - name: cache
+        hostPath:
+          path: /data/ns/dev-system/gitea-runner/cache
+          type: DirectoryOrCreate
+      - name: docker-sock
+        hostPath:
+          path: /data/ns/dev-system/dind/run/docker.sock
+          type: Socket

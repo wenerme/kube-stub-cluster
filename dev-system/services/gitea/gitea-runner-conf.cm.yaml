@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitea-runner-conf
+  labels:
+    app: gitea-runner
+data:
+  config.yaml: |
+    log:
+      level: info
+    # 目前以下配置没用
+    cache:
+      dir: '/cache'
+    container:
+      workdir_parent: /data/workspace

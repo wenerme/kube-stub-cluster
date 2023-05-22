@@ -27,7 +27,8 @@ haproxytech-ingress:
     config: {}
       # chain proxy
       # proxy-protocol: 192.168.1.1
-
+    serviceMonitor:
+      enabled: true
   # k8s.gcr.io/defaultbackend-amd64
   defaultBackend:
     enabled: false

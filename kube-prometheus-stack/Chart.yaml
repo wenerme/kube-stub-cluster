@@ -3,5 +3,5 @@ apiVersion: v2
 version: 1.0.0
 dependencies:
 - name: kube-prometheus-stack
-  version: 33.2.0
+  version: 	45.29.0
   repository: https://charts.wener.tech

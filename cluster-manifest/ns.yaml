@@ -23,3 +23,19 @@ kind: Namespace
 metadata:
   name: data-system
   namespace: data-system
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring-system
+  namespace: monitoring-system
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  namespace: monitoring

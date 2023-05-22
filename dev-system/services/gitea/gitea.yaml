@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitea
+  labels:
+    app: gitea
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: gitea
+      labels:
+        app: gitea
+    spec:
+      containers:
+      - name: gitea
+        image: gitea/gitea:1.19.3
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: USER_UID
+          value: '1000'
+        - name: USER_GID
+          value: '1000'
+        envFrom:
+        - secretRef:
+            name: gitea-env
+        ports:
+        - containerPort: 3000
+          name: web
+        - containerPort: 22
+          name: git
+        volumeMounts:
+        - mountPath: /data
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/dev-system/gitea/data
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: gitea
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea
+spec:
+  selector:
+    app: gitea
+  ports:
+  - port: 80
+    targetPort: web
+    name: web
+  - port: 22
+    targetPort: git
+    name: git
+

@@ -18,6 +18,7 @@ KUBESEAL 	?= kubeseal
 
 ifneq ("$(wildcard $(REPO_ROOT)/kubeconfig.yaml)","")
 KUBECTL := $(KUBECTL) --kubeconfig $(REPO_ROOT)/kubeconfig.yaml
+HELM := $(HELM) --kubeconfig $(REPO_ROOT)/kubeconfig.yaml
 export KUBECONFIG="$(REPO_ROOT)/kubeconfig.yaml"
 endif
 
@@ -51,19 +52,36 @@ info: ## show current context - NAMESPACE, CONTEXT
 	@echo helm: $(HELM)
 	@echo kubeseal: $(KUBESEAL)
 
-.PHONY: ns always
+.PHONEY: ns always
 always:
 
-build: $(wildcard kustomization.yaml) $(wildcard values.yaml) ## build yaml
+ifneq ($(wildcard kustomization.yaml),)
+build:## build yaml
 	! [ -e build.sh ] || sh ./build.sh
-	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
-	! [ -e Chart.yaml ] || $(HELM) template $$(basename $$PWD) ./ > build.ignored.yaml
+	kustomize build ./ > build.ignored.yaml
 verify: build  ## client verify
 	$(KUBECTL) apply -f build.ignored.yaml --dry-run=client
 verify-server: build ## verify at server side
 	$(KUBECTL) apply -f build.ignored.yaml --dry-run=server
 apply: build ## apply resource
 	$(KUBECTL) apply -f build.ignored.yaml
+delete: build ## delete resource
+	$(KUBECTL) delete -f build.ignored.yaml
+endif
+
+ifneq ($(wildcard values.yaml),)
+build:
+	$(HELM) template $$(basename $$PWD) ./ > build.ignored.yaml
+verify:
+	$(HELM) install $$(basename $$PWD) . --dry-run
+apply:
+	$(HELM) upgrade --install $$(basename $$PWD) .
+delete:
+	$(HELM) uninstall $$(basename $$PWD)
+status:
+	$(HELM) status $$(basename $$PWD)
+endif
+
 
 up: $(wildcard Chart.yaml) $(wildcard update.sh) ## update
 	! [ -e Chart.yaml ] || helm dep up .
@@ -84,9 +102,6 @@ seal: ## seal all secret to sealed
 kustomize-add-templates:
 	kustomize edit add resource templates/*.yaml
 
-delete: build ## delete resource
-	$(KUBECTL) delete -f build.ignored.yaml
-
 clean: ## Cleanup charts & build
 	rm -rf build.ignored.yaml
 	rm -rf charts
@@ -95,7 +110,7 @@ ns: ## create namespace
 	$(KUBECTL) create ns $(NAMESPACE)
 
 images: build
-	grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/'
+	grep image: build.ignored.yaml | sort -u | sed -r 's#\s*image:\s*"?([-_/.:a-z0-9]+).*?#\1#'
 
 nodes: ## show nodes in cluster for verify config
 	$(KUBECTL) get nodes

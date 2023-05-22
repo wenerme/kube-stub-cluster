@@ -130,6 +130,16 @@ ssh-keygen -t ed25519 -C "$(basename $PWD)" -f argocd -q -N ""
 - `/data/ns/<namespace>/<service-category>/<service>/<volume-name>`
   - `/data/ns/data-system/supabase/imgproxy/storage`
 
+**namespace**
+
+- `*-system` - for others as base
+  - `monitoring` - for this cluster
+  - `monitoring-system` - for monitoring as a service - e.g. multi cluster metrics storage
+- monitoring - e.g. prometheus, node_exporter
+- monitoring-system - observability system - e.g. zincobserve, vector, grafana
+- dev-system - CI/CD - e.g. dind, runner
+- data-system - Database, FileStorage - e.g. minio, PostgreSQL
+
 ## Release Watch
 
 - ![](https://img.shields.io/github/v/release/keycloak/keycloak?label=Keycloak)

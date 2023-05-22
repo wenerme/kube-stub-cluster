@@ -3,7 +3,11 @@ grafana:
     enabled: true
     hosts:
     - grafana.example.com
-  envFromSecret: ""
+  envFromSecret: grafana-env
+  admin:
+    existingSecret: grafana-env
+    userKey: GF_SECURITY_ADMIN_USER
+    passwordKey: GF_SECURITY_ADMIN_PASSWORD
   plugins:
   - grafana-clock-panel
   - grafana-polystat-panel

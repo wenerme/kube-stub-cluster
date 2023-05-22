@@ -10,3 +10,4 @@ up-verify-server: up verify-server
 up-build: up build
 
 delete:
+images:
