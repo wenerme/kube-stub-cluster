@@ -21,6 +21,8 @@ metadata:
   annotations:
     reloader.stakater.com/auto: 'true'
 spec:
+  # need to change token
+  replicas: 1
   selector:
     matchLabels:
       app: gitea-runner
@@ -30,6 +32,7 @@ spec:
       labels:
         app: gitea-runner
     spec:
+      enableServiceLinks: false
       containers:
       - name: gitea-runner
         image: quay.io/wener/gitea-runner:3.18
@@ -39,10 +42,6 @@ spec:
           value: http://gitea
         - name: GITEA_RUNNER_LABELS
           value: ubuntu-latest:docker://wener/node:18,alpine-latest:docker://wener/node:18,alpine-exec:host
-        - name: GITEA_RUNNER_ACTION_CACHE_DIR
-          value: /cache/actions
-        - name: ACT_CACHE_SERVER_DIR
-          value: /cache/server
         - name: CONFIG_FILE
           value: /etc/gitea/runner/config.yaml
         - name: POD_NAME
@@ -56,12 +55,28 @@ spec:
         volumeMounts:
         - mountPath: /cache
           name: cache
+        # sharable cache cross runner
+        - mountPath: /root/.pnpm-store
+          name: cache
+          subPath: .pnpm-store
+        - mountPath: /root/.npm
+          name: cache
+          subPath: .npm
+        - mountPath: /root/.m2
+          name: cache
+          subPath: .m2
+        - mountPath: /etc/apk/cache
+          name: cache
+          subPath: etc/apk/cache
+        # primary private data
         - mountPath: /data
           name: data
           subPathExpr: $(POD_NAME)
-        - mountPath: /root/.cache
+        # multi runner state
+        - mountPath: /root
           name: data
-          subPathExpr: $(POD_NAME)/cache
+          subPathExpr: $(POD_NAME)/home
+        # docker by sock, required for docker label
         - mountPath: /var/run/docker.sock
           name: docker-sock
         - mountPath: /etc/gitea/runner

@@ -27,7 +27,7 @@ spec:
         # lower mtu to avoid network problem
         - --mtu=1400
         - --experimental
-        - --tls=false
+        #- --tls=false
         #- --tlsverify=false
         ports:
         - containerPort: 2375
