@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turborepo-remote-cache
+  labels:
+    app: turborepo-remote-cache
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: turborepo-remote-cache
+      labels:
+        app: turborepo-remote-cache
+    spec:
+      initContainers:
+      - name: take-data-dir-ownership
+        image: alpine
+        command:
+        - chown
+        - 100:101
+        - /data
+        volumeMounts:
+        - name: cache
+          mountPath: /data
+      containers:
+      - name: turborepo-remote-cache
+        image: ducktors/turborepo-remote-cache:1.14.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: PORT
+          value: "3000"
+        - name: NODE_ENV
+          value: production
+        - name: STORAGE_PROVIDER
+          value: local
+        - name: STORAGE_PATH
+          value: /cache
+        envFrom:
+        - secretRef:
+            name: turborepo-remote-cache-env
+        volumeMounts:
+        - mountPath: /tmp/cache
+          name: cache
+      volumes:
+      - name: cache
+        hostPath:
+          path: /data/ns/dev-system/turborepo-remote-cache/cache
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: turborepo-remote-cache
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: turborepo-remote-cache
+spec:
+  selector:
+    app: turborepo-remote-cache
+  ports:
+  - port: 80
+    targetPort: http
+    name: http
