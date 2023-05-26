@@ -1,0 +1,33 @@
+kind: Probe
+apiVersion: monitoring.coreos.com/v1
+metadata:
+  name: http-probe
+  labels:
+    app: probe
+spec:
+  jobName: http-probe
+  prober:
+    url: prometheus-blackbox-exporter:9115
+  module: http_2xx
+  targets:
+    staticConfig:
+      static:
+      - https://wener.me
+
+---
+
+kind: Probe
+apiVersion: monitoring.coreos.com/v1
+metadata:
+  name: ping-probe
+  labels:
+    app: probe
+spec:
+  jobName: ping-probe
+  prober:
+    url: prometheus-blackbox-exporter:9115
+  module: icmp
+  targets:
+    staticConfig:
+      static:
+      - 1.1.1.1

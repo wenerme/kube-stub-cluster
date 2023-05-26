@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- services/kube-prometheus/kube-prometheus.app.yaml
+- services/prometheus-blackbox-exporter/prometheus-blackbox-exporter.app.yaml
+- services/targets
+- services/vector-agent
+
+patches:
+- target:
+    kind: Application
+  path: ./patches/app-main-repo.yaml
+- target:
+    kind: ClusterIssuer
+  path: ./patches/cluster-issuer-acme-email.yaml

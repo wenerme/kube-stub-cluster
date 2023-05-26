@@ -1,0 +1,15 @@
+grafana:
+  ingress:
+    enabled: true
+    hosts:
+    - monitor.example.com
+  envFromSecret: grafana-env
+  admin:
+    existingSecret: grafana-env
+    userKey: GF_SECURITY_ADMIN_USER
+    passwordKey: GF_SECURITY_ADMIN_PASSWORD
+  plugins:
+  - grafana-clock-panel
+  - grafana-polystat-panel
+  podAnnotations:
+    reloader.stakater.com/auto: 'true'

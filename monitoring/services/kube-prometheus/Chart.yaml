@@ -1,0 +1,7 @@
+name: prometheus-blackbox-exporter
+apiVersion: v2
+version: 1.0.0
+dependencies:
+- name: kube-prometheus
+  version: 8.10.1
+  repository: https://charts.wener.tech

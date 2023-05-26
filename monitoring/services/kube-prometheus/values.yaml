@@ -1,0 +1,69 @@
+kube-prometheus:
+  rbac:
+    apiVersion: v1
+  prometheus:
+    # ingress:
+    #   ## Set to true to enable ingress record generation
+    #   enabled: false
+    #   ## Set this to true in order to add the corresponding annotations for cert-manager
+    #   certManager: false
+    #   ## Ingress annotations done as key:value pairs
+    #   ## For a full list of possible ingress annotations, please see
+    #   ## ref: https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md
+    #   ##
+    #   ## If tls is set to true, annotation ingress.kubernetes.io/secure-backends: "true" will automatically be set
+    #   ## If certManager is set to true, annotation kubernetes.io/tls-acme: "true" will automatically be set
+    #   annotations: {}
+    #   #  kubernetes.io/ingress.class: nginx
+    #   hosts:
+    #     - name: prometheus.local
+    #       path: /
+    #   tls: {}
+    # externalUrl: https://prometheus.example.com
+
+    retention: 15d
+    retentionSize: "6GB"
+
+    remoteRead: [ ]
+    remoteWrite: [ ]
+
+    # empty dir
+    storageSpec:
+      emptyDir: { }
+    persistence:
+      enabled: true
+      storageClass: local-path
+
+    #    externalLabels:
+    #      cluster: kube
+    # thanos
+    # disableCompaction: true
+
+  # --storage.tsdb.max-block-duration=2h --storage.tsdb.min-block-duration=2h
+
+  # Lens
+  # ====
+  node-exporter:
+    serviceMonitor:
+      # interval: 10s
+      relabelings:
+      - action: replace
+        regex: (.*)
+        replacement: $1
+        sourceLabels:
+        - __meta_kubernetes_pod_node_name
+        targetLabel: kubernetes_node
+
+  kubelet:
+    serviceMonitor:
+      # interval: 15s
+      metricRelabelings:
+      - action: replace
+        sourceLabels:
+        - node
+        targetLabel: instance
+
+  # limit & request works
+  kube-state-metrics:
+    serviceMonitor:
+      honorLabels: true
