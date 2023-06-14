@@ -1,0 +1,202 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: haproxy-sni-proxy
+  labels:
+    app: haproxy-sni-proxy
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: haproxy-sni-proxy
+  template:
+    metadata:
+      name: haproxy-sni-proxy
+      labels:
+        app: haproxy-sni-proxy
+    spec:
+      securityContext:
+        sysctls:
+        - name: net.ipv4.ip_unprivileged_port_start
+          value: '0'
+      containers:
+      - name: haproxy-sni-proxy
+        image: haproxy:lts-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        - containerPort: 8404
+          name: stats
+        volumeMounts:
+        - mountPath: /usr/local/etc/haproxy
+          name: conf
+      volumes:
+      - name: conf
+        configMap:
+          name: haproxy-sni-proxy-conf
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: haproxy-sni-proxy-conf
+  labels:
+    app: haproxy-sni-proxy-conf
+data:
+  haproxy.cfg: |
+    global
+      log stdout format raw local0
+
+    defaults
+      log global
+
+      mode tcp
+      option tcplog
+      option dontlognull
+
+      timeout http-request    10s
+      timeout queue           1m
+      timeout connect         10s
+      timeout client          1m
+      timeout server          1m
+      timeout http-keep-alive 10s
+      timeout check           10s
+      timeout tunnel          1h
+      maxconn                 10000
+
+    frontend http
+      mode http
+      bind *:80
+      use_backend registry.k8s.io.http if { hdr(host) -m end registry.k8s.io }
+      use_backend pkg.dev.http if { hdr(host) -m end pkg.dev }
+
+    frontend https
+      mode tcp
+      bind *:443
+
+      tcp-request inspect-delay 5s
+      tcp-request content accept if { req.ssl_hello_type 1 }
+
+      use_backend registry.k8s.io.https if { req_ssl_sni -m end -i registry.k8s.io }
+      use_backend pkg.dev.https if { req_ssl_sni -m end -i pkg.dev }
+
+    backend registry.k8s.io.https
+      mode tcp
+      server s1 34.96.108.209:443 check check-via-socks4 socks4 clash:7890
+
+    backend registry.k8s.io.http
+      mode http
+      server s1 34.96.108.209:80 check check-via-socks4 socks4 clash:7890
+
+    backend pkg.dev.http
+      mode http
+      server s1 216.239.32.27:80 check check-via-socks4 socks4 clash:7890
+
+    backend pkg.dev.https
+      mode tcp
+      server s1 216.239.32.27:443 check check-via-socks4 socks4 clash:7890
+
+    listen stats
+      bind :8404
+      mode http
+
+      #option http-use-htx
+      http-request use-service prometheus-exporter if { path /metrics }
+
+      stats enable
+      stats hide-version
+      stats uri /
+      stats refresh 5s
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: haproxy-sni-proxy
+  labels:
+    app: haproxy-sni-proxy
+spec:
+  selector:
+    app: haproxy-sni-proxy
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    name: http
+  - protocol: TCP
+    port: 443
+    targetPort: 443
+    name: https
+  - protocol: TCP
+    port: 8404
+    targetPort: 8404
+    name: stats
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: haproxy-sni-proxy
+  labels:
+    app: haproxy-sni-proxy
+spec:
+  rules:
+  - host: registry.k8s.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: haproxy-sni-proxy
+            port:
+              name: http
+  - host: "*.pkg.dev"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: haproxy-sni-proxy
+            port:
+              name: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: haproxy-sni-proxy-https
+  labels:
+    app: haproxy-sni-proxy-https
+  annotations:
+    haproxy.org/ssl-passthrough: 'true'
+    nginx.ingress.kubernetes.io/ssl-passthrough: 'true'
+spec:
+  rules:
+  - host: registry.k8s.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: haproxy-sni-proxy
+            port:
+              name: https
+  - host: "*.pkg.dev"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: haproxy-sni-proxy
+            port:
+              name: https

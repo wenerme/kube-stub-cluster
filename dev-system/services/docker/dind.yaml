@@ -29,6 +29,7 @@ spec:
         - --experimental
         #- --tls=false
         #- --tlsverify=false
+        - --group=1000
         ports:
         - containerPort: 2375
           name: docker

@@ -18,7 +18,6 @@ KUBESEAL 	?= kubeseal
 
 ifneq ("$(wildcard $(REPO_ROOT)/kubeconfig.yaml)","")
 KUBECTL := $(KUBECTL) --kubeconfig $(REPO_ROOT)/kubeconfig.yaml
-HELM := $(HELM) --kubeconfig $(REPO_ROOT)/kubeconfig.yaml
 export KUBECONFIG="$(REPO_ROOT)/kubeconfig.yaml"
 endif
 
@@ -34,58 +33,60 @@ HELM 		:= $(HELM) --kube-context $(KUBE_CONTEXT)
 KUBESEAL 	:= $(KUBESEAL) --context $(KUBE_CONTEXT)
 endif
 
-
-
-ifneq ("$(wildcard kustomization.yaml)","")
-
-else ifneq ("$(wildcard values.yaml)","")
-
-endif
+APP_NAME ?= $(shell basename $(PWD))
 
 # Extra local ignored actions
 -include ignored.mk
 
 info: ## show current context - NAMESPACE, CONTEXT
+	@echo app: $(APP_NAME)
 	@echo context: $(KUBE_CONTEXT)
 	@echo namespace: $(NAMESPACE)
 	@echo kubectl: $(KUBECTL)
 	@echo helm: $(HELM)
 	@echo kubeseal: $(KUBESEAL)
 
-.PHONEY: ns always
+.PHONY: ns always
 always:
 
-ifneq ($(wildcard kustomization.yaml),)
-build:## build yaml
+ifneq ("$(wildcard kustomization.yaml)","")
+
+up: ## update
+	! [ -e update.sh ] || sh ./update.sh
+
+build: $(wildcard kustomization.yaml) ## build yaml
 	! [ -e build.sh ] || sh ./build.sh
-	kustomize build ./ > build.ignored.yaml
+	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
+	! [ -e Chart.yaml ] || $(HELM) template $$(basename $$PWD) ./ > build.ignored.yaml
+
+apply: build ## apply resource
+	$(KUBECTL) apply -f build.ignored.yaml
+
+delete: build ## delete resource
+	$(KUBECTL) delete -f build.ignored.yaml
+
+else ifneq ("$(wildcard values.yaml)","")
+
+up:
+	$(HELM) dep up .
+
+build:
+	$(HELM) template $$(basename $$PWD) ./ > build.ignored.yaml
+
+apply:
+	$(HELM) upgrade --install $$(basename $$PWD) ./
+
+delete:
+	$(HELM) uninstall $$(basename $$PWD)
+
+
+endif
+
 verify: build  ## client verify
 	$(KUBECTL) apply -f build.ignored.yaml --dry-run=client
 verify-server: build ## verify at server side
 	$(KUBECTL) apply -f build.ignored.yaml --dry-run=server
-apply: build ## apply resource
-	$(KUBECTL) apply -f build.ignored.yaml
-delete: build ## delete resource
-	$(KUBECTL) delete -f build.ignored.yaml
-endif
 
-ifneq ($(wildcard values.yaml),)
-build:
-	$(HELM) template $$(basename $$PWD) ./ > build.ignored.yaml
-verify:
-	$(HELM) install $$(basename $$PWD) . --dry-run
-apply:
-	$(HELM) upgrade --install $$(basename $$PWD) .
-delete:
-	$(HELM) uninstall $$(basename $$PWD)
-status:
-	$(HELM) status $$(basename $$PWD)
-endif
-
-
-up: $(wildcard Chart.yaml) $(wildcard update.sh) ## update
-	! [ -e Chart.yaml ] || helm dep up .
-	! [ -e update.sh ] || sh ./update.sh
 
 # from ide: click to run
 up-verify: up verify
@@ -110,7 +111,7 @@ ns: ## create namespace
 	$(KUBECTL) create ns $(NAMESPACE)
 
 images: build
-	grep image: build.ignored.yaml | sort -u | sed -r 's#\s*image:\s*"?([-_/.:a-z0-9]+).*?#\1#'
+	grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/'
 
 nodes: ## show nodes in cluster for verify config
 	$(KUBECTL) get nodes
