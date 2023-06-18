@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apisix-fallback
+  namespace: apisix
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: apisix-gateway
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - "*.example.com"
+    secretName: example-com-cert
+  - hosts:
+    - "*.dev.example.com"
+    secretName: dev-example-com-cert
+  - hosts:
+    - "*.apis.example.com"
+    secretName: apis-example-com-cert

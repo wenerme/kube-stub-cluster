@@ -1,0 +1,45 @@
+apisix:
+  # https://github.com/apache/apisix/blob/master/conf/config-default.yaml
+  replicaCount: 2
+  timezone: Asia/Shanghai
+  service:
+    http:
+      enabled: true
+      servicePort: 80
+      containerPort: 9080
+      nodePort: 30080
+      additionalContainerPorts: []
+    tls:
+      servicePort: 443
+      # nodePort: 4443
+  # https://github.com/apache/apisix-dashboard/blob/master/api/conf/conf.yaml
+  dashboard:
+    enabled: true
+    config:
+      authentication:
+        secret: $(uuidgen) # CHANGEME for JWT
+        users:
+        - username: admin
+          password: $(uuidgen) # CHANGEME
+      conf:
+        log:
+          errorLog:
+            level: info # warn
+    ingress:
+      enabled: true
+      hosts:
+      - host: apisix.example.com
+        paths:
+        - /
+
+  ingress-controller:
+    enabled: true
+    config:
+      apisix:
+        serviceNamespace: apisix
+      kubernetes:
+        ingressClass: apisix
+  etcd:
+    persistence:
+      enabled: true
+      storageClass: local-path

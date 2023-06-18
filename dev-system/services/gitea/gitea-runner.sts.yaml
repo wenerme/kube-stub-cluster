@@ -49,6 +49,8 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.name
+        - name: DOCKER_HOST
+          value: unix:///var/run/docker/docker.sock
         envFrom:
         - secretRef:
             name: gitea-runner-env
@@ -77,8 +79,8 @@ spec:
           name: data
           subPathExpr: $(POD_NAME)/home
         # docker by sock, required for docker label
-        - mountPath: /var/run/docker.sock
-          name: docker-sock
+        - mountPath: /var/run/docker
+          name: docker-run
         - mountPath: /etc/gitea/runner
           name: conf
       volumes:
@@ -93,7 +95,6 @@ spec:
         hostPath:
           path: /data/ns/dev-system/gitea-runner/cache
           type: DirectoryOrCreate
-      - name: docker-sock
+      - name: docker-run
         hostPath:
-          path: /data/ns/dev-system/dind/run/docker.sock
-          type: Socket
+          path: /data/ns/dev-system/dind/run

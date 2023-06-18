@@ -17,8 +17,9 @@ HELM 		?= helm
 KUBESEAL 	?= kubeseal
 
 ifneq ("$(wildcard $(REPO_ROOT)/kubeconfig.yaml)","")
-KUBECTL := $(KUBECTL) --kubeconfig $(REPO_ROOT)/kubeconfig.yaml
 export KUBECONFIG="$(REPO_ROOT)/kubeconfig.yaml"
+KUBECTL := $(KUBECTL) --kubeconfig $(KUBECONFIG)
+HELM := $(HELM) --kubeconfig $(KUBECONFIG)
 endif
 
 ifneq ($(NAMESPACE),)
@@ -57,7 +58,6 @@ up: ## update
 build: $(wildcard kustomization.yaml) ## build yaml
 	! [ -e build.sh ] || sh ./build.sh
 	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
-	! [ -e Chart.yaml ] || $(HELM) template $$(basename $$PWD) ./ > build.ignored.yaml
 
 apply: build ## apply resource
 	$(KUBECTL) apply -f build.ignored.yaml
@@ -71,13 +71,13 @@ up:
 	$(HELM) dep up .
 
 build:
-	$(HELM) template $$(basename $$PWD) ./ > build.ignored.yaml
+	$(HELM) template $(APP_NAME) ./ > build.ignored.yaml
 
 apply:
-	$(HELM) upgrade --install $$(basename $$PWD) ./
+	$(HELM) upgrade --install $(APP_NAME) ./
 
 delete:
-	$(HELM) uninstall $$(basename $$PWD)
+	$(HELM) uninstall $(APP_NAME)
 
 
 endif
@@ -109,6 +109,10 @@ clean: ## Cleanup charts & build
 
 ns: ## create namespace
 	$(KUBECTL) create ns $(NAMESPACE)
+ns\:delete:
+	$(KUBECTL) delete ns $(NAMESPACE)
+ns\:ls:
+	$(KUBECTL) get ns
 
 images: build
 	grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/'

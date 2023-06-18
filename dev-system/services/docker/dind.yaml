@@ -21,15 +21,17 @@ spec:
         securityContext:
           privileged: true
         args:
-        - --insecure-registry=docker-registry:5000
-        - --registry-mirror=http://docker-registry:5000
+        #- --insecure-registry=docker-registry:5000
+        #- --registry-mirror=http://docker-registry:5000
+        - --registry-mirror=https://docker.m.daocloud.io
+        - --registry-mirror=https://dockercr.wener.me
         - --registry-mirror=https://registry-1.docker.io
         # lower mtu to avoid network problem
         - --mtu=1400
         - --experimental
+        - --group=1000
         #- --tls=false
         #- --tlsverify=false
-        - --group=1000
         ports:
         - containerPort: 2375
           name: docker
@@ -48,7 +50,7 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/docker
           name: data
-        - mountPath: /var/run/
+        - mountPath: /var/run
           name: run
         - mountPath: /cache
           name: cache

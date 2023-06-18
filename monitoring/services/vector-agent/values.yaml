@@ -1,0 +1,22 @@
+vector:
+  role: Agent
+  existingConfigMaps:
+  - vector-agent-conf
+  dataDir: /vector-data-dir
+  podAnnotations:
+    reloader.stakater.com/auto: 'true'
+  containerPorts:
+  - name: prom-exporter
+    containerPort: 9090
+    protocol: TCP
+  - name: api
+    containerPort: 8686
+  service:
+    enabled: true
+    ports:
+    - name: prom-exporter
+      port: 9090
+      targetPort: prom-exporter
+    - name: api
+      port: 8686
+      targetPort: api

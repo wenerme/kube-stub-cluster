@@ -1,0 +1,8 @@
+name: apisix
+apiVersion: v2
+dependencies:
+- name: apisix
+  version: 2.0.0
+  repository: https://charts.wener.tech
+
+version: 1.0.0

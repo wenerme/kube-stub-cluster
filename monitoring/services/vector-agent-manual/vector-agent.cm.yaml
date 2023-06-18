@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: vector-agent-conf
+  name: vector-agent
   labels:
     app: vector-agent
 data:
@@ -10,10 +10,9 @@ data:
     api:
       enabled: true
       address: 127.0.0.1:8686
-      #address: 0.0.0.0:8686
       playground: false
     sources:
-      kubernetes_logs_raw:
+      kubernetes_logs:
         type: kubernetes_logs
       host_metrics:
         filesystem:
@@ -24,64 +23,27 @@ data:
           mountPoints:
             excludes: [ "*/proc/sys/fs/binfmt_misc" ]
         type: host_metrics
-      host_log_raw:
-        type: file
-        include:
-        - /var/log/**/*
-        exclude:
-        - /var/log/pods/**/*
       internal_metrics:
         type: internal_metrics
-    transforms:
-      kubernetes_logs:
-        type: remap
-        inputs:
-        - kubernetes_logs_raw
-        source: |-
-          # exact time the event was processed by Kubernetes.
-          ._timestamp = .timestamp
-      host_log:
-        type: remap
-        inputs:
-        - host_log_raw
-        source: |-
-          .host = get_env_var!("VECTOR_SELF_NODE_NAME")
-          # ingest time
-          ._timestamp = .timestamp
     sinks:
       prom_exporter:
         type: prometheus_exporter
         inputs: [ host_metrics, internal_metrics ]
         address: 0.0.0.0:9090
-      openobserve_metrics:
+      zinc_metrics:
         type: prometheus_remote_write
         inputs: [ host_metrics, internal_metrics ]
-        endpoint: http://openobserve.data-system:5080/api/default/prometheus/api/v1/write
+        endpoint: http://zincobserve:5080/api/default/prometheus/api/v1/write
         auth:
           strategy: basic
           user: "${ZO_USER}"
           password: "${ZO_PASSWORD}"
         healthcheck:
           enabled: false
-      openobserve_kube_log:
+      zinc_logs:
         type: http
         inputs: [ kubernetes_logs ]
-        uri: http://openobserve.data-system:5080/api/default/kube-log/_json
-        method: post
-        compression: gzip
-        auth:
-          strategy: basic
-          user: "${ZO_USER}"
-          password: "${ZO_PASSWORD}"
-        encoding:
-          codec: json
-          timestamp_format: rfc3339
-        healthcheck:
-          enabled: false
-      openobserve_host_log:
-        type: http
-        inputs: [ host_log ]
-        uri: http://openobserve.data-system:5080/api/default/host-log/_json
+        uri: http://zincobserve:5080/api/default/default/_json
         method: post
         compression: gzip
         auth:

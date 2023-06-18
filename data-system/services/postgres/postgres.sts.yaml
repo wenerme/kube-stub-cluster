@@ -47,6 +47,9 @@ spec:
         env:
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
+        # default en.UTF-8, collate is better for common usage
+        - name: POSTGRES_INITDB_ARGS
+          value: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
         - name: POSTGRES_PASSWORD
           value: $(POSTGRES_PASSWORD)
         volumeMounts:

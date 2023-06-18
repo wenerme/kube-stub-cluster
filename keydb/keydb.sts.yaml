@@ -30,9 +30,9 @@ spec:
           [ $HOSTNAME = "keydb-$i" ] || args="$args --replicaof keydb-$i.keydb.$POD_NAMESPACE.svc.cluster.local 6379"
           done
           echo ARGS: $args
-          
+
           args="$args --masteruser replica --masterauth $(cat /secret/keydb_masterauth)"
-          
+
           keydb-server /conf/keydb.conf $args
 
         env:
