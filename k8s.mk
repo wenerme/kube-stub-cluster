@@ -10,7 +10,7 @@ export KUBE_CONTEXT
 -include local.mk
 
 NAMESPACE := $(or $(NAMESPACE), $(shell [ -e ./NAMESPACE ] && cat NAMESPACE))
-NAMESPACE := $(or $(NAMESPACE), $(shell basename $(shell pwd)))
+NAMESPACE := $(or $(NAMESPACE), $(shell basename $(PWD)))
 
 KUBECTL 	?= kubectl
 HELM 		?= helm
@@ -65,7 +65,13 @@ apply: build ## apply resource
 delete: build ## delete resource
 	$(KUBECTL) delete -f build.ignored.yaml
 
-else ifneq ("$(wildcard values.yaml)","")
+kustomize-add-templates: ## add templates to kustomization.yaml
+	kustomize edit add resource templates/*.yaml
+
+verify: build  ## client verify
+	$(KUBECTL) apply -f build.ignored.yaml --dry-run=client
+
+else ifneq ("$(wildcard Chart.yaml)","")
 
 up:
 	$(HELM) dep up .
@@ -76,14 +82,14 @@ build:
 apply:
 	$(HELM) upgrade --install $(APP_NAME) ./
 
+verify:
+	$(HELM) upgrade --install $(APP_NAME) --verify ./
+
 delete:
 	$(HELM) uninstall $(APP_NAME)
 
-
 endif
 
-verify: build  ## client verify
-	$(KUBECTL) apply -f build.ignored.yaml --dry-run=client
 verify-server: build ## verify at server side
 	$(KUBECTL) apply -f build.ignored.yaml --dry-run=server
 
@@ -93,15 +99,11 @@ up-verify: up verify
 up-verify-server: up verify-server
 up-build: up build
 
-
 SEAL_PATTERN ?= ".*"
 seal: ## seal all secret to sealed
 	@mkdir -p templates
 	@ls *.secret.yaml | grep -E "$(SEAL_PATTERN)" | tee -a /dev/fd/2 | xargs -I {} sh -c '$(KUBESEAL) -f {} -o yaml > templates/$$(echo {}|sed "s/[.]secret[.]/.sealed./")'
 	@git add templates/*.sealed.yaml
-
-kustomize-add-templates:
-	kustomize edit add resource templates/*.yaml
 
 clean: ## Cleanup charts & build
 	rm -rf build.ignored.yaml
@@ -109,21 +111,30 @@ clean: ## Cleanup charts & build
 
 ns: ## create namespace
 	$(KUBECTL) create ns $(NAMESPACE)
-ns\:delete:
+ns\:delete: ## delete namespace
 	$(KUBECTL) delete ns $(NAMESPACE)
-ns\:ls:
+ns\:ls: ## list namespace
 	$(KUBECTL) get ns
 
-images: build
+images: build ## show images
 	grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/'
 
 nodes: ## show nodes in cluster for verify config
 	$(KUBECTL) get nodes
 
+storage\:class: ## show storage class in cluster for verify config
+	$(KUBECTL) get storageclass
+
 events: ## show events in cluster
 	$(KUBECTL) get events -Aw
+
+fix: ## fix some common issue
+	! [ -e "$(REPO_ROOT)/kubeconfig.yaml" ] || chmod 600 "$(REPO_ROOT)/kubeconfig.yaml"
+
+update\:k8s.mk: ## update k8s.mk
+	@curl -s https://ghproxy.com/raw.githubusercontent.com/wenerme/kube-stub-cluster/main/k8s.mk > $(REPO_ROOT)/k8s.mk
 
 help: ## Show this help
 	@grep -E -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-%: %-default
+# %: %-default
