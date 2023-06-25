@@ -9,4 +9,7 @@ up-verify: up verify
 up-verify-server: up verify-server
 up-build: up build
 
+up:
+apply:
 delete:
+images:

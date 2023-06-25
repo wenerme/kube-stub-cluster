@@ -4,5 +4,5 @@ version: 1.0.0
 
 dependencies:
 - name: reloader
-  version: v1.0.15
+  version: 1.0.28
   repository: https://charts.wener.tech
