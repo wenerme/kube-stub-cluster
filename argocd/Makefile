@@ -5,11 +5,12 @@ info:
 build:
 seal:
 
+up:
 up-verify: up verify
 up-verify-server: up verify-server
 up-build: up build
 
+apply:
+ns:
 delete:
-
-images: build
-	grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/'
+images:
