@@ -4,6 +4,6 @@ version: 1.0.0
 
 dependencies:
 - name: temporal
-  version: 0.14.5
+  version: 0.15.1
   repository: https://charts.wener.tech
   condition: temporal.enabled

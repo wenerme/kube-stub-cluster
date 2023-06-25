@@ -140,10 +140,13 @@ ssh-keygen -t ed25519 -C "$(basename $PWD)" -f argocd -q -N ""
 - dev-system - CI/CD - e.g. dind, runner
 - data-system - Database, FileStorage - e.g. minio, PostgreSQL
 
-## Release Watch
+## Version Watch
 
 - ![](https://img.shields.io/github/v/release/keycloak/keycloak?label=Keycloak)
+- ![](https://img.shields.io/github/v/release/openobserve/openobserve?label=OpenObserve)
+- ![](https://img.shields.io/github/v/release/temporalio/temporal?label=temporal)
 - ![](https://img.shields.io/github/v/release/oauth2-proxy/oauth2-proxy?label=oauth2-proxy)
+- ![](https://img.shields.io/github/v/release/haproxytech/kubernetes-ingress?label=haproxytech-ingress)
 
 ## Requirement
 

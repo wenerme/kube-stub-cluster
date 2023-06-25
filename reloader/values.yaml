@@ -1,1 +1,4 @@
-reloader: {}
+reloader:
+  reloader:
+    isArgoRollouts: false
+    reloadOnCreate: false

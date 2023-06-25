@@ -2,7 +2,7 @@ name: athens-proxy
 apiVersion: v2
 dependencies:
 - name: athens-proxy
-  version: 0.5.1
+  version: 0.5.2
   repository: https://charts.wener.tech
 
 version: 1.0.0
