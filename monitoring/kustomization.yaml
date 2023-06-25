@@ -3,9 +3,9 @@ kind: Kustomization
 
 resources:
 - services/kube-prometheus/kube-prometheus.app.yaml
+- services/vector-agent/vector-agent.app.yaml
 - services/prometheus-blackbox-exporter/prometheus-blackbox-exporter.app.yaml
 - services/targets
-- services/vector-agent
 
 patches:
 - target:
