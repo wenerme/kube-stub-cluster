@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vaultwarden
+  labels:
+    app: vaultwarden
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: vaultwarden
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: vaultwarden
+    spec:
+      containers:
+      - name: vaultwarden
+        image: vaultwarden/server:1.28.0-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 3012
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: SIGNUPS_ALLOWED
+          value: 'false'
+        envFrom:
+        - secretRef:
+            name: vaultwarden-env
+        volumeMounts:
+        - mountPath: /data
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/home-system/vaultwarden/data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: vaultwarden
+  labels:
+    app: vaultwarden
+spec:
+  selector:
+    app: vaultwarden
+  ports:
+  - port: 80
+    targetPort: http
+    name: http

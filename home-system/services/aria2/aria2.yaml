@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aria2
+  labels:
+    app: aria2
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: aria2
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: aria2
+    spec:
+      containers:
+      - name: aria2
+        # https://github.com/P3TERX/Aria2-Pro-Docker
+        image: p3terx/aria2-pro:202108221156
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6800
+          name: rpc
+          hostPort: 6800
+        - containerPort: 6888
+          name: dht
+          # tcp & udp
+        env:
+        - name: RPC_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: RPC_SECRET
+              name: aria2-conf
+        - name: PUID
+          value: '1000'
+        - name: CUSTOM_TRACKER_URL
+          value: https://cdn.jsdelivr.net/gh/wenerme/repository@master/trackers_aira2.txt
+        # max-concurrent-downloads 20
+        volumeMounts:
+        - mountPath: /download
+          name: download
+        - mountPath: /config
+          name: config
+          # .aria2
+      - name: ariang
+        image: p3terx/ariang
+        ports:
+        - containerPort: 6880
+          name: web
+          hostPort: 6880
+      volumes:
+      - name: download
+        hostPath:
+          path: /data/download
+      - name: config
+        secret:
+          secretName: aria2-conf
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: aria2
+  labels:
+    app: aria2
+spec:
+  selector:
+    app: aria2
+  ports:
+  - port: 80
+    targetPort: web
+    name: web
+  - port: 6800
+    targetPort: rpc
+    name: rpc
+  - port: 6888
+    protocol: TCP
+    targetPort: dht
+    name: dht
+

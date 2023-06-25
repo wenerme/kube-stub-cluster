@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  labels:
+    app: jellyfin
+spec:
+  selector:
+    matchLabels:
+      app: jellyfin
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+      - name: jellyfin
+        image: jellyfin/jellyfin:10.8.9
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8096
+          name: http
+          hostPort: 8096
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          failureThreshold: 3
+          initialDelaySeconds: 90
+          periodSeconds: 30
+        env:
+        #- name: https_proxy
+        #  value: clash:7890
+        #- name: http_proxy
+        #  value: clash:7890
+        - name: TZ
+          value: Asia/Shanghai
+        resources:
+          requests:
+            cpu: 500m
+            memory: 500Mi
+          limits:
+            memory: 8Gi
+        volumeMounts:
+        - mountPath: /config
+          name: config
+        - mountPath: /cache
+          name: cache
+        - mountPath: /media
+          name: media
+      volumes:
+      - name: config
+        hostPath:
+          path: /data/ns/home-system/jellyfin/config
+      - name: cache
+        hostPath:
+          path: /data/ns/home-system/jellyfin/cache
+      - name: media
+        hostPath:
+          path: /data/media
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: jellyfin
+  labels:
+    app: jellyfin
+spec:
+  selector:
+    app: jellyfin
+  ports:
+  - port: 80
+    targetPort: http
+    name: http

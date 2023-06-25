@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thelounge
+  labels:
+    app: thelounge
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  selector:
+    matchLabels:
+      app: thelounge
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: thelounge
+    spec:
+      containers:
+      - name: thelounge
+        image: thelounge/thelounge:4.3.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9000
+          name: http
+        volumeMounts:
+        - mountPath: /var/opt/thelounge
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/home-system/thelounge/data
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: thelounge
+  labels:
+    app: thelounge
+spec:
+  selector:
+    app: thelounge
+  ports:
+  - port: 80
+    name: http
+    targetPort: http
