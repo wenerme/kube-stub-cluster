@@ -6,14 +6,18 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
+  project: default
   destination:
     namespace: monitoring
+    server: 'https://kubernetes.default.svc'
   source:
     path: monitoring/services/kube-prometheus
+    repoURL: https://code.wener.me/wenerme/kube-stub-cluster.git
+    targetRevision: HEAD
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
+      #selfHeal: true
     syncOptions:
     - ServerSideApply=true
     - CreateNamespace=true

@@ -2,6 +2,9 @@ vector:
   role: Agent
   existingConfigMaps:
   - vector-agent-conf
+  envFrom:
+  - secretRef:
+      name: vector-agent-env
   dataDir: /vector-data-dir
   podAnnotations:
     reloader.stakater.com/auto: 'true'

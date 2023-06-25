@@ -7,3 +7,5 @@ up:
 build:
 
 apply:
+delete:
+ns:

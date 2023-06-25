@@ -7,13 +7,17 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
+    server: 'https://kubernetes.default.svc'
     namespace: monitoring
+  project: default
   source:
+    repoURL: https://code.wener.me/wenerme/kube-stub-cluster.git
+    targetRevision: HEAD
     path: monitoring/services/vector-agent
   syncPolicy:
     automated:
       prune: true
-      selfHeal: true
+      #selfHeal: true
     syncOptions:
     - ServerSideApply=true
     - CreateNamespace=true
