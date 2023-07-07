@@ -1,45 +1,19 @@
 keycloak:
-  # Java app, prefer some limits
-  resources:
-    limits:
-      cpu: 2
-      memory: 4Gi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-  envs:
-  - name: KEYCLOAK_USER
-    value: "admin"
-  - name: KEYCLOAK_PASSWORD
-    value: "admin"
-  - name: PROXY_ADDRESS_FORWARDING
-    value: "true"
-  - name: DB_VENDOR
-    value: postgres
-  - name: DB_ADDR
-    value: demo-demo-system
-  - name: DB_PORT
-    value: "5432"
-  - name: DB_DATABASE
-    value: keycloak
-  #  - name: DB_SCHEMA
-  #    value: public
-  - name: DB_USER
-    value: keycloak
-  - name: DB_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: keycloak.demo-demo-system.credentials.postgresql.acid.zalan.do
-        key: password
-  ingress:
+  auth:
+    adminUser: keycloak
+    existingSecret: keycloak-secret
+    passwordSecretKey: admin_password
+  externalDatabase:
+    host: postgres.data-system
+    existingSecret: keycloak-secret
+    existingSecretDatabaseKey: postgres_db
+    existingSecretUserKey: postgres_user
+    existingSecretPasswordKey: postgres_password
+  production: true
+  proxy: edge
+  podAnnotations:
+    reloader.stakater.com/auto: 'true'
+  metrics:
     enabled: true
-    annotations:
-      kubernetes.io/tls-acme: "true"
-    hosts:
-    - host: kc.example.com
-      paths:
-      - path: /
-    tls:
-    - hosts:
-      - kc.example.com
-      secretName: keycloak-cert
+  postgresql:
+    enabled: false

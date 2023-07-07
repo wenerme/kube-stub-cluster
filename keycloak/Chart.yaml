@@ -1,10 +1,7 @@
-apiVersion: v2
 name: keycloak
-type: application
+apiVersion: v2
 version: 1.0.0
-
 dependencies:
 - name: keycloak
-  version: 16.1.0
-  repository: https://charts.wener.tech/wener
-#  repository: file://../charts/keycloak
+  version: 15.1.4
+  repository: oci://dockercr.wener.me/bitnamicharts
