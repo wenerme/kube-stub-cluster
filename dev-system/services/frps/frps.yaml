@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frps
-        image: wener/frps:0.44.0
+        image: wener/frps:0.51.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80

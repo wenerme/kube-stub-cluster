@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frpc-bind
+  labels:
+    app: frpc-bind
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: frpc-bind
+      labels:
+        app: frpc-bind
+    spec:
+      containers:
+      - name: frpc-bind
+        image: wener/frpc:0.51.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 22
+          name: ssh
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+        - containerPort: 7400
+          name: dashboard
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        envFrom:
+        - secretRef:
+            # frpc_name, frpc_sk, frps_server_addr, frps_token
+            name: frpc-bind-env
+        volumeMounts:
+        - mountPath: /etc/frp/frpc.ini
+          name: conf
+          subPath: frpc.ini
+      volumes:
+      - name: conf
+        configMap:
+          name: frpc-bind-conf
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: frpc-bind
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frpc-bind
+spec:
+  selector:
+    app: frpc-bind
+  ports:
+  - port: 22
+    name: ssh
+    targetPort: ssh
+  - port: 80
+    name: http
+    targetPort: http
+  - port: 443
+    name: https
+    targetPort: https
+  - port: 7400
+    name: dashboard
+    targetPort: dashboard
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frpc-bind-conf
+data:
+  frpc.ini: |
+    [common]
+    server_addr = frps
+    token = {{.Envs.frps_token}}
+    server_port = 80
+    protocol = websocket
+
+    admin_addr = 0.0.0.0
+    admin_port = 7400
+    admin_user = admin
+    admin_pwd = admin
+
+    use_encryption = true
+    use_compression = true
+
+    [{{.Envs.frpc_name}}.ssh]
+    type = stcp
+    sk = {{.Envs.frpc_sk}}
+    role = visitor
+    bind_addr = 0.0.0.0
+    bind_port = 22
+    server_name = {{.Envs.frpc_name}}.ssh
+
+    [{{.Envs.frpc_name}}.http]
+    type = stcp
+    sk = {{.Envs.frpc_sk}}
+    role = visitor
+    bind_addr = 0.0.0.0
+    bind_port = 80
+    server_name = {{.Envs.frpc_name}}.http
+
+    [{{.Envs.frpc_name}}.https]
+    type = stcp
+    sk = {{.Envs.frpc_sk}}
+    role = visitor
+    bind_addr = 0.0.0.0
+    bind_port = 443
+    server_name = {{.Envs.frpc_name}}.https
