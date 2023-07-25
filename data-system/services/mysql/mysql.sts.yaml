@@ -37,15 +37,38 @@ spec:
         securityContext:
           runAsGroup: 1000
           runAsUser: 1000
+        lifecycle:
+          preStop:
+            exec:
+              command: [ "/bin/sh", "-c", "mysqladmin -u root shutdown" ]
         args:
+        # basic
         - --character-set-server=utf8mb4
         - --collation-server=utf8mb4_unicode_ci
         - --max-connections=2000
+        # case by case
+        #- --log_bin_trust_function_creators=1
+        # Logging
         - --log-output=FILE,TABLE
         - --slow-query-log=1
-        - --slow-query-log-file=/var/lib/mysql/slow.log
+        - --slow-query-log-file=/var/lib/mysql/slow.log # HOSTNAME-slow.log
         - --long-query-time=5
         - --log-queries-not-using-indexes
+        # IO+Memory
+        # - --innodb_io_capacity=2000 # for SSD
+        # - --innodb_thread_concurrency=0
+        # - --innodb_read_io_threads=64 # default=4
+        # - --innodb_write_io_threads=64
+        # - --innodb_buffer_pool_size=64G
+        # ZFS Tuning
+        # - --sync_binlog=0
+        # - --innodb_flush_log_at_trx_commit=0
+        # - --innodb_flush_method=fsync
+        # - --innodb_doublewrite=0
+        # - --innodb_use_native_aio=0
+        # - --innodb_checksum_algorithm=none
+        # - --innodb_log_write_ahead_size=16384   #=16k
+        # - --innodb_flush_neighbors=0
         ports:
         - containerPort: 3306
           name: mysql
