@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frpc-bind
+  name: frpc-local
   labels:
-    app: frpc-bind
+    app: frpc-local
   annotations:
     reloader.stakater.com/auto: 'true'
 spec:
   replicas: 1
   template:
     metadata:
-      name: frpc-bind
+      name: frpc-local
       labels:
-        app: frpc-bind
+        app: frpc-local
     spec:
       containers:
-      - name: frpc-bind
-        image: wener/frpc:0.51.2
+      - name: frpc-local
+        image: local/frpc:0.51.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 22
@@ -39,7 +39,7 @@ spec:
         envFrom:
         - secretRef:
             # frpc_name, frpc_sk, frps_server_addr, frps_token
-            name: frpc-bind-env
+            name: frpc-local-env
         volumeMounts:
         - mountPath: /etc/frp/frpc.ini
           name: conf
@@ -47,22 +47,22 @@ spec:
       volumes:
       - name: conf
         configMap:
-          name: frpc-bind-conf
+          name: frpc-local-conf
       restartPolicy: Always
   selector:
     matchLabels:
-      app: frpc-bind
+      app: frpc-local
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: frpc-bind
+  name: frpc-local
   labels:
-    app: frpc-bind
+    app: frpc-local
 spec:
   selector:
-    app: frpc-bind
+    app: frpc-local
   ports:
   - port: 22
     name: ssh
@@ -82,21 +82,16 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: frpc-bind-conf
+  name: frpc-local-conf
   labels:
-    app: frpc-bind
+    app: frpc-local
 data:
   frpc.ini: |
     [common]
-    # frps
     server_addr = {{.Envs.frps_server_addr}}
     token = {{.Envs.frps_token}}
     server_port = 443
     protocol = wss
-    # for local frps in same cluster
-    # server_addr = frps
-    # server_port = 80
-    # protocol = tcp
 
     admin_addr = 0.0.0.0
     admin_port = 7400
@@ -107,34 +102,20 @@ data:
     use_compression = true
 
     [{{.Envs.frpc_name}}.ssh]
-    role = visitor
     type = stcp
     sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 22
+    local_ip = {{.Envs.HOST_IP}}
+    local_port = 22
     server_name = {{.Envs.frpc_name}}.ssh
-
     [{{.Envs.frpc_name}}.http]
-    role = visitor
     type = stcp
     sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 80
+    local_ip = haproxytech-ingress.haproxy-controller
+    local_port = 80
     server_name = {{.Envs.frpc_name}}.http
-
     [{{.Envs.frpc_name}}.https]
-    role = visitor
     type = stcp
     sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 443
+    local_ip = haproxytech-ingress.haproxy-controller
+    local_port = 443
     server_name = {{.Envs.frpc_name}}.https
-    [{{.Envs.frpc_name}}.https.xtcp]
-    role = visitor
-    type = xtcp
-    sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 443
-    server_name = {{.Envs.frpc_name}}.https.xtcp
-    fallback_to = {{.Envs.frpc_name}}.https
-    fallback_timeout_ms = 500
