@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghcr
+  labels:
+    app: ghcr
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: ghcr
+      labels:
+        app: ghcr
+    spec:
+      containers:
+      - name: registry
+        image: registry:2.8.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5000
+          name: registry
+        - containerPort: 5001
+          name: debug
+        startupProbe:
+          httpGet:
+            port: registry
+            path: /v2/
+        env:
+        - name: https_proxy
+          value: clash:7890
+        - name: REGISTRY_PROXY_REMOTEURL
+          value: https://ghcr.io
+        - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
+          value: /var/lib/registry
+        - name: REGISTRY_HTTP_ADDR
+          value: :5000
+        - name: REGISTRY_HTTP_HOST
+          value: https://ghcr.example.com
+        - name: REGISTRY_HTTP_DEBUG_ADDR
+          value: :5001
+        - name: REGISTRY_HTTP_DEBUG_PROMETHEUS_ENABLED
+          value: "true"
+        volumeMounts:
+        - mountPath: /var/lib/registry
+          name: data
+      volumes:
+      - name: data
+        hostPath:
+          path: /data/ns/dev-system/ghcr/data
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: ghcr
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghcr
+spec:
+  selector:
+    app: ghcr
+  ports:
+  - port: 5000
+    name: registry
+    targetPort: registry
+  - port: 5001
+    name: debug
+    targetPort: debug

@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- dockercr.external.svc.yaml
+- k8scr.yaml
+- ghcr.yaml
+- gcr.yaml
+- quaycr.yaml

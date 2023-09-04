@@ -115,16 +115,17 @@ data:
         type: prometheus_exporter
         inputs: [ host_metrics, internal_metrics ]
         address: 0.0.0.0:9090
-      openobserve_metrics:
-        type: prometheus_remote_write
-        inputs: [ host_metrics, internal_metrics ]
-        endpoint: "${ZO_URL}/prometheus/api/v1/write"
-        auth:
-          strategy: basic
-          user: "${ZO_USER}"
-          password: "${ZO_PASSWORD}"
-        healthcheck:
-          enabled: false
+      # OO Metrics is not ready - use 1000 more space
+      #openobserve_metrics:
+      #  type: prometheus_remote_write
+      #  inputs: [ host_metrics, internal_metrics ]
+      #  endpoint: "${ZO_URL}/prometheus/api/v1/write"
+      #  auth:
+      #    strategy: basic
+      #    user: "${ZO_USER}"
+      #    password: "${ZO_PASSWORD}"
+      #  healthcheck:
+      #    enabled: false
       openobserve_kube_log:
         type: http
         inputs: [ kubernetes_logs ]
