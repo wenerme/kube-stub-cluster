@@ -14,9 +14,19 @@ spec:
       labels:
         app: verdaccio
     spec:
+      initContainers:
+      - name: take-ownership
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        command: [ 'chown', '10001:10001', '/verdaccio/storage' ]
+        volumeMounts:
+        - mountPath: /verdaccio/storage
+          name: storage
+        securityContext:
+          runAsUser: 0
       containers:
       - name: verdaccio
-        image: verdaccio/verdaccio:5.22
+        image: verdaccio/verdaccio:5.26.2
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -35,6 +45,11 @@ spec:
         - mountPath: /verdaccio/conf
           name: config
           readOnly: true
+        - mountPath: /secret
+          name: secret
+          readOnly: true
+        securityContext:
+          runAsUser: 10001
       volumes:
       - name: storage
         hostPath:
@@ -42,6 +57,9 @@ spec:
       - name: config
         configMap:
           name: verdaccio-config
+      - name: secret
+        secret:
+          secretName: verdaccio-secret
       securityContext:
         runAsUser: 10001
         fsGroup: 10001
@@ -55,12 +73,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: verdaccuio
+  name: verdaccio
   labels:
-    app: verdaccuio
+    app: verdaccio
 spec:
   selector:
-    app: verdaccuio
+    app: verdaccio
   ports:
   - port: 80
     name: web

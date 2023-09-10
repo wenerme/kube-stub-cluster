@@ -58,7 +58,9 @@ data:
     # https://verdaccio.org/docs/configuration#authentication
     auth:
       htpasswd:
-        file: /verdaccio/storage/htpasswd
+        file: /secret/htpasswd
+        # don't allow to create new users
+        max_users: -1
         # Maximum amount of users allowed to register, defaults to "+infinity".
         # You can set this to -1 to disable registration.
         # max_users: 1000
@@ -78,14 +80,20 @@ data:
           maxSockets: 40
           maxFreeSockets: 10
     packages:
-      packages:
-        '@*/*':
-          access: $all
-          publish: $authenticated
-          proxy: npmjs
+      # scope private
+      #'@wener/*':
+      #  access: $all
+      #  publish: $authenticated
+
+      # public
+      '@*/*':
+        access: $all
+        # allow override public package
+        # publish: $authenticated
+        proxy: npmjs
       '**':
         access: $all
-        publish: $authenticated
+        # publish: $authenticated
         proxy: npmjs
 
     # To improve your security configuration and  avoid dependency confusion
