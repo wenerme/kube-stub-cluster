@@ -56,8 +56,8 @@ up: ## update
 	! [ -e update.sh ] || sh ./update.sh
 
 build: $(wildcard kustomization.yaml) ## build yaml
-	! [ -e build.sh ] || sh ./build.sh
-	! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
+	@! [ -e build.sh ] || sh ./build.sh
+	@! [ -e kustomization.yaml ] || kustomize build ./ > build.ignored.yaml
 
 apply: build ## apply resource
 	$(KUBECTL) apply -f build.ignored.yaml
@@ -77,7 +77,7 @@ up:
 	$(HELM) dep up .
 
 build:
-	$(HELM) template $(APP_NAME) ./ > build.ignored.yaml
+	@$(HELM) template $(APP_NAME) ./ > build.ignored.yaml
 
 apply:
 	$(HELM) upgrade --install $(APP_NAME) ./
@@ -111,13 +111,30 @@ clean: ## Cleanup charts & build
 
 ns: ## create namespace
 	$(KUBECTL) create ns $(NAMESPACE)
-ns\:delete: ## delete namespace
+ns-delete: ## delete namespace
 	$(KUBECTL) delete ns $(NAMESPACE)
-ns\:ls: ## list namespace
+ns-ls: ## list namespace
 	$(KUBECTL) get ns
 
+ingress-ls: ## list ingress
+	$(KUBECTL) get ingress -A
+ingress-ls-domain: ## list ingress with domain
+	$(KUBECTL) get ingress -A -o json | jq -r '.items[] | [.metadata.name, .spec.rules[].host] | @tsv' | sort
+
+svc-ls: ## list service
+	$(KUBECTL) get svc -A
+
+svc-ls-nodeport: ## list service with nodeport
+	$(KUBECTL) get svc -A -o json | jq -r '.items[] | select(.spec.type == "NodePort") | [.metadata.name, .spec.ports[].nodePort] | @tsv' | sort
+
 images: build ## show images
-	grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/'
+	@grep image: build.ignored.yaml | sort -u | sed -r 's/\s*image:\s*(\S+)/\1/' | tr -d '"' | sort
+
+images-prefetch:
+	@echo '{"apiVersion":"apps/v1","kind":"DaemonSet","metadata":{"name":"prefetch","namespace":"default","labels":{"app":"prefetch"}},"spec":{"selector":{"matchLabels":{"app":"prefetch"}},"template":{"metadata":{"labels":{"app":"prefetch"}},"spec":{"containers":[]}}}}' > prefetch.ds.ignored.yaml
+	@$(MAKE) images | xargs -I IMG yq '.spec.template.spec.containers += { "name": "c"+(.spec.template.spec.containers|length), "image": "IMG", "imagePullPolicy": "IfNotPresent", "command": [ "tail", "-f", "/dev/null" ] }' -i prefetch.ds.ignored.yaml
+	@yq -P -I2 -i prefetch.ds.ignored.yaml
+	$(KUBECTL) apply -f prefetch.ds.ignored.yaml --namespace=default
 
 nodes: ## show nodes in cluster for verify config
 	$(KUBECTL) get nodes

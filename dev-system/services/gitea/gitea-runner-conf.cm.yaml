@@ -9,13 +9,9 @@ data:
     log:
       level: info
     cache:
+      enabled: true
       dir: /data/cache
+      host: "gitea-runner"
+      port: 8088
     container:
       workdir_parent: /data/workspace
-    runner:
-      capacity: 5
-    env_file: /etc/gitea/runner/job.env.ini
-  job.env.ini: |
-    TURBO_API=turborepo-remote-cache
-    #TURBO_TEAM
-    #TURBO_TOKEN

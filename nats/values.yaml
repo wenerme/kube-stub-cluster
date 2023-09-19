@@ -1,26 +1,18 @@
 nats:
-  nats:
+  config:
     jetstream:
       enabled: true
-      fileStorage:
-        # bases on usecase
+      fileStore:
         enabled: false
-  exporter:
-    serviceMonitor:
+        pvc:
+          enabled: false
+    mqtt:
       enabled: true
-  mqtt:
+    websocket:
+      enabled: true
+      tls:
+        enabled: false
+    cluster:
+      enabled: false
+  promExporter:
     enabled: true
-  websocket:
-    enabled: true
-    noTLS: true
-  appProtocol:
-    # kubernetes >= 1.18
-    enabled: true
-
-  cluster:
-    # bases on usecase
-    enabled: false
-
-  auth:
-    # bases on usecase
-    enabled: false

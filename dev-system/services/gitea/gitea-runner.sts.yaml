@@ -21,8 +21,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: 'true'
 spec:
-  # need to change token
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: gitea-runner
@@ -33,10 +32,17 @@ spec:
         app: gitea-runner
     spec:
       enableServiceLinks: false
+      #hostAliases:
+      #- hostnames:
+      #  - gitea.example.com
+      #  ip: 10.10.1.1
       containers:
       - name: gitea-runner
-        image: quay.io/wener/gitea-runner:3.18
+        image: quay.io/wener/gitea-runner:0.2.5
         imagePullPolicy: Always
+        ports:
+        - containerPort: 8088
+          name: web
         env:
         - name: GITEA_INSTANCE_URL
           value: http://gitea
@@ -49,15 +55,12 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.name
-        - name: DOCKER_HOST
-          value: unix:///var/run/docker/docker.sock
         envFrom:
         - secretRef:
             name: gitea-runner-env
         volumeMounts:
         - mountPath: /cache
           name: cache
-        # sharable cache cross runner
         - mountPath: /root/.pnpm-store
           name: cache
           subPath: .pnpm-store
@@ -70,17 +73,15 @@ spec:
         - mountPath: /etc/apk/cache
           name: cache
           subPath: etc/apk/cache
-        # primary private data
         - mountPath: /data
           name: data
           subPathExpr: $(POD_NAME)
-        # multi runner state
         - mountPath: /root
           name: data
           subPathExpr: $(POD_NAME)/home
-        # docker by sock, required for docker label
-        - mountPath: /var/run/docker
-          name: docker-run
+        # docker label require docker sock
+        - mountPath: /var/run/docker.sock
+          name: docker-sock
         - mountPath: /etc/gitea/runner
           name: conf
       volumes:
@@ -95,6 +96,22 @@ spec:
         hostPath:
           path: /data/ns/dev-system/gitea-runner/cache
           type: DirectoryOrCreate
-      - name: docker-run
+      - name: docker-sock
         hostPath:
-          path: /data/ns/dev-system/dind/run
+          path: /data/ns/dev-system/dind/run/docker.sock
+          type: Socket
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gitea-runner
+spec:
+  selector:
+    app: gitea-runner
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: web
+    name: web

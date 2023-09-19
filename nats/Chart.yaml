@@ -4,5 +4,5 @@ version: 1.0.0
 
 dependencies:
 - name: nats
-  version: 0.14.1
-  repository: https://charts.wener.tech
+  version: 1.0.3
+  repository: oci://index.docker.io/wcharts
