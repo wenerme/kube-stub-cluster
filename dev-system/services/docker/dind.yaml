@@ -15,17 +15,9 @@ spec:
         app: dind
     spec:
       enableServiceLinks: false
-      hostAliases:
-      - hostnames:
-        - registry.npmjs.org
-        - registry-1.docker.io
-        - quay.io
-        - proxy.golang.org
-        ip: 10.43.0.108 # sni-proxy service ip
-      # faster image push
-      #- hostnames:
-      #  - cr.example.com
-      #  ip: 10.10.1.1
+      dnsConfig:
+        nameservers:
+        - 10.43.0.153
       initContainers:
       - name: init
         image: wener/base

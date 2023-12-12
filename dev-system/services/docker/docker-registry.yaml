@@ -12,9 +12,12 @@ spec:
       labels:
         app: docker-registry
     spec:
+      dnsConfig:
+        nameservers:
+        - 10.43.0.153
       containers:
       - name: docker-registry
-        image: registry:2.8.1
+        image: registry:2.8.3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000

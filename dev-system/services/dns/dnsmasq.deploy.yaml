@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dnsmasq
+  labels:
+    app: dnsmasq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dnsmasq
+  template:
+    metadata:
+      name: dnsmasq
+      labels:
+        app: dnsmasq
+    spec:
+      containers:
+      - name: dnsmasq
+        image: wener/dnsmasq
+        imagePullPolicy: Always
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+
+          SNI=$(dig +short sni-proxy.dev-system.svc.cluster.local)
+
+          cat <<EOF > /etc/dnsmasq.conf
+          log-queries
+          local-service
+          conf-dir=/etc/dnsmasq.d/,*.conf
+
+          address=/docker.io/$SNI
+          address=/docker.com/$SNI
+          address=/npmjs.org/$SNI
+          address=/golang.org/$SNI
+          address=/quay.io/$SNI
+          address=/google.com/$SNI
+          address=/googleapis.com/$SNI
+
+          # internal network
+          # address=/wener.me/127.0.0.1
+          EOF
+
+          dnsmasq --test
+          dnsmasq -d -C /etc/dnsmasq.conf
+        ports:
+        - containerPort: 53
+          name: dns
+          protocol: UDP
+        - containerPort: 53
+          name: dns-tcp
+          protocol: TCP
+        startupProbe:
+          exec:
+            command:
+            - dig
+            - +short
+            - wener.me
+            - "@127.0.0.1"
+          initialDelaySeconds: 5
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: dnsmasq
+spec:
+  selector:
+    app: dnsmasq
+  ports:
+  - protocol: UDP
+    port: 53
+    name: dns
+  - protocol: TCP
+    port: 53
+    name: dns-tcp
