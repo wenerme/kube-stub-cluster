@@ -32,7 +32,13 @@ spec:
         app: gitea-runner
     spec:
       enableServiceLinks: false
-      #hostAliases:
+      hostAliases:
+      - hostnames:
+        - registry.npmjs.org
+        - registry-1.docker.io
+        - quay.io
+        - proxy.golang.org
+        ip: 10.43.0.108 # sni-proxy service ip
       #- hostnames:
       #  - gitea.example.com
       #  ip: 10.10.1.1

@@ -15,20 +15,38 @@ spec:
         app: dind
     spec:
       enableServiceLinks: false
+      hostAliases:
+      - hostnames:
+        - registry.npmjs.org
+        - registry-1.docker.io
+        - quay.io
+        - proxy.golang.org
+        ip: 10.43.0.108 # sni-proxy service ip
       # faster image push
-      #hostAliases:
       #- hostnames:
       #  - cr.example.com
       #  ip: 10.10.1.1
+      initContainers:
+      - name: init
+        image: wener/base
+        command:
+        - sh
+        - -c
+        - |
+          set -ex
+          rm /var/run/docker.pid || echo "no pid"
+        volumeMounts:
+        - mountPath: /var/run
+          name: run
       containers:
       - name: dind
-        image: docker:23.0.3-dind-alpine3.17
+        image: docker:24.0.7-dind-alpine3.18
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: true
         args:
-        #- --insecure-registry=docker-registry:5000
-        #- --registry-mirror=http://docker-registry:5000
+        - --insecure-registry=docker-registry:5000
+        - --registry-mirror=http://docker-registry:5000
         - --registry-mirror=https://docker.m.daocloud.io
         - --registry-mirror=https://dockercr.wener.me
         - --registry-mirror=https://registry-1.docker.io
@@ -48,6 +66,7 @@ spec:
             command:
             - docker
             - info
+          initialDelaySeconds: 30
         env:
         # 设置为 空 则为 non tls
         - name: DOCKER_TLS_CERTDIR

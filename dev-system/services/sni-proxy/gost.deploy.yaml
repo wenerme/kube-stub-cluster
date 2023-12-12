@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gost
+  labels:
+    app: gost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gost
+  template:
+    metadata:
+      name: gost
+      labels:
+        app: gost
+    spec:
+      containers:
+      - name: gost
+        image: gogost/gost
+        imagePullPolicy: IfNotPresent
+        command:
+        - gost
+        - -L=sni://:80
+        - -L=sni://:443
+        - -F=socks5://clash:7890
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 443
+          name: https
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gost
+  labels:
+    app: gost
+spec:
+  selector:
+    app: gost
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http
+    name: http
+  - protocol: TCP
+    port: 443
+    targetPort: https
+    name: https
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: sni-proxy
+  labels:
+    app: gost
+spec:
+  selector:
+    app: gost
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: http
+    name: http
+  - protocol: TCP
+    port: 443
+    targetPort: https
+    name: https
+  clusterIP: 10.43.0.108
