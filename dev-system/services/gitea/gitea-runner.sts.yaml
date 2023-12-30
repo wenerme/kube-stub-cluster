@@ -7,6 +7,10 @@ metadata:
 spec:
   selector:
     app: gitea-runner
+  ports:
+  - name: web
+    port: 8088
+    targetPort: web
   type: ClusterIP
   clusterIP: None
 
@@ -21,7 +25,7 @@ metadata:
   annotations:
     reloader.stakater.com/auto: 'true'
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: gitea-runner
@@ -32,19 +36,17 @@ spec:
         app: gitea-runner
     spec:
       enableServiceLinks: false
-      hostAliases:
-      - hostnames:
-        - registry.npmjs.org
-        - registry-1.docker.io
-        - quay.io
-        - proxy.golang.org
-        ip: 10.43.0.108 # sni-proxy service ip
+      #dnsConfig:
+      #  nameservers:
+      #  - 10.43.0.153
+      # go has problem with dns search, use dnsPolicy none will not resolve gitea
+      #hostAliases:
       #- hostnames:
-      #  - gitea.example.com
-      #  ip: 10.10.1.1
+      #  - code.example.com
+      #  ip: 10.0.0.1
       containers:
       - name: gitea-runner
-        image: quay.io/wener/gitea-runner:0.2.5
+        image: quay.io/wener/gitea-runner:0.2.6
         imagePullPolicy: Always
         ports:
         - containerPort: 8088
@@ -61,15 +63,15 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.name
+        - name: DOCKER_HOST
+          value: unix:///var/run/docker/docker.sock
         envFrom:
         - secretRef:
             name: gitea-runner-env
         volumeMounts:
         - mountPath: /cache
           name: cache
-        - mountPath: /root/.pnpm-store
-          name: cache
-          subPath: .pnpm-store
+        # sharable cache cross runner
         - mountPath: /root/.npm
           name: cache
           subPath: .npm
@@ -79,15 +81,17 @@ spec:
         - mountPath: /etc/apk/cache
           name: cache
           subPath: etc/apk/cache
+        # primary private data
         - mountPath: /data
           name: data
           subPathExpr: $(POD_NAME)
+        # multi runner state
+        # PNPM Store PATH /root/.local/share/pnpm/store
         - mountPath: /root
           name: data
           subPathExpr: $(POD_NAME)/home
-        # docker label require docker sock
-        - mountPath: /var/run/docker.sock
-          name: docker-sock
+        - mountPath: /var/run/docker
+          name: docker-run
         - mountPath: /etc/gitea/runner
           name: conf
       volumes:
@@ -102,22 +106,7 @@ spec:
         hostPath:
           path: /data/ns/dev-system/gitea-runner/cache
           type: DirectoryOrCreate
-      - name: docker-sock
+      - name: docker-run
         hostPath:
-          path: /data/ns/dev-system/dind/run/docker.sock
-          type: Socket
+          path: /data/ns/dev-system/dind/run
 
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: gitea-runner
-spec:
-  selector:
-    app: gitea-runner
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: web
-    name: web
