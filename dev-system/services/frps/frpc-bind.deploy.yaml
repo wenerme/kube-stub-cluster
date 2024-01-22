@@ -86,55 +86,57 @@ metadata:
   labels:
     app: frpc-bind
 data:
-  frpc.ini: |
-    [common]
+  frpc.toml: |
+    token = "{{.Envs.frps_token}}"
     # frps
-    server_addr = {{.Envs.frps_server_addr}}
-    token = {{.Envs.frps_token}}
-    server_port = 443
-    protocol = wss
+    serverAddr = "{{.Envs.frps_server_addr}}"
+    serverPort = 443
+    protocol = "wss"
     # for local frps in same cluster
-    # server_addr = frps
-    # server_port = 80
-    # protocol = tcp
+    # serverAddr = "frps"
+    # serverPort = 80
+    # protocol = "tcp"
 
-    admin_addr = 0.0.0.0
-    admin_port = 7400
-    admin_user = admin
-    admin_pwd = admin
+    webServer.addr = "0.0.0.0"
+    webServer.port = 7400
+    webServer.user = "admin"
+    webServer.password = "admin"
 
-    use_encryption = true
-    use_compression = true
+    transport.useEncryption = true
+    transport.useCompression = true
 
-    [{{.Envs.frpc_name}}.ssh]
-    role = visitor
-    type = stcp
-    sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 22
-    server_name = {{.Envs.frpc_name}}.ssh
+    [[visitors]]
+    name = "{{.Envs.frpc_name}}.ssh"
+    role = "visitor"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    serverName = "{{.Envs.frpc_name}}.ssh"
+    bindAddr = "0.0.0.0"
+    bindPort = 22
 
-    [{{.Envs.frpc_name}}.http]
-    role = visitor
-    type = stcp
-    sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 80
-    server_name = {{.Envs.frpc_name}}.http
+    [[visitors]]
+    name = "{{.Envs.frpc_name}}.http"
+    role = "visitor"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    serverName = "{{.Envs.frpc_name}}.http"
+    bindAddr = "0.0.0.0"
+    bindPort = 80
 
-    [{{.Envs.frpc_name}}.https]
-    role = visitor
-    type = stcp
-    sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 443
-    server_name = {{.Envs.frpc_name}}.https
-    [{{.Envs.frpc_name}}.https.xtcp]
-    role = visitor
-    type = xtcp
-    sk = {{.Envs.frpc_sk}}
-    bind_addr = 0.0.0.0
-    bind_port = 443
-    server_name = {{.Envs.frpc_name}}.https.xtcp
-    fallback_to = {{.Envs.frpc_name}}.https
-    fallback_timeout_ms = 500
+    [[visitors]]
+    name = "{{.Envs.frpc_name}}.https"
+    role = "visitor"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    serverName = "{{.Envs.frpc_name}}.https"
+    bindAddr = "0.0.0.0"
+    bindPort = 443
+
+    [[visitors]]
+    name = "{{.Envs.frpc_name}}.prometheus"
+    role = "visitor"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    serverName = "{{.Envs.frpc_name}}.prometheus"
+    bindAddr = "0.0.0.0"
+    bindPort = 19090

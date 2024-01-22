@@ -16,8 +16,12 @@ spec:
     spec:
       containers:
       - name: frps
-        image: wener/frps:0.51.0
+        image: wener/frps:0.53.2
         imagePullPolicy: IfNotPresent
+        command:
+        - frps
+        - -c
+        - /etc/frp/frps.toml
         ports:
         - containerPort: 80
           name: http
@@ -29,9 +33,8 @@ spec:
         - secretRef:
             name: frps-env
         volumeMounts:
-        - mountPath: /etc/frp/frps.ini
+        - mountPath: /etc/frp/
           name: conf
-          subPath: frps.ini
       volumes:
       - name: conf
         configMap:
@@ -48,24 +51,20 @@ kind: ConfigMap
 metadata:
   name: frps-conf
 data:
-  frps.ini: |
-    [common]
-    bind_addr = 0.0.0.0
-    bind_port = 80
-    kcp_bind_port = 80
-    vhost_http_port = 80
-    vhost_https_port = 443
-    dashboard_addr = 0.0.0.0
-    dashboard_port = 7500
-    bind_udp_port = 7001
-
-    enable_prometheus = true
-
-    dashboard_user=admin
-    dashboard_pwd={{.Envs.frps_dashboard_pwd}}
-    token={{.Envs.frps_token}}
-    # subdomain_host = frp.example.com
-    subdomain_host={{.Envs.frps_subdomain_host}}
+  frps.toml: |
+    bindAddr = "0.0.0.0"
+    bindPort = 80
+    quicBindPort = 7001
+    kcpBindPort = 80
+    vhostHTTPPort = 80
+    vhostHTTPSPort = 443
+    webServer.addr = "0.0.0.0"
+    webServer.port = 7500
+    webServer.user = "admin"
+    webServer.password = "{{.Envs.frps_dashboard_pwd}}"
+    enablePrometheus = true
+    token = "{{.Envs.frps_token}}"
+    subdomainHost = "{{.Envs.frps_subdomain_host}}"
 
 ---
 

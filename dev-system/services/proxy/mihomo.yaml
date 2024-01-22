@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mihomo
+  labels:
+    app: mihomo
+  annotations:
+    reloader.stakater.com/auto: 'true'
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: mihomo
+      labels:
+        app: mihomo
+    spec:
+      containers:
+      - name: mihomo
+        image: wener/mihomo:compatible
+        imagePullPolicy: Always
+        command:
+        - mihomo
+        - -f
+        - /etc/mihomo/config.yaml
+        ports:
+        - containerPort: 7890
+          name: proxy
+        - containerPort: 9090
+          name: dashboard
+        - containerPort: 7893
+          name: tproxy
+        - containerPort: 53
+          name: dns
+          protocol: UDP
+        volumeMounts:
+        - mountPath: /etc/mihomo
+          name: etc
+        - mountPath: /root/.config # cache download
+          name: config
+      volumes:
+      - name: etc
+        secret:
+          secretName: mihomo-etc
+      - name: config
+        hostPath:
+          path: /data/ns/dev-system/mihomo/config
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: mihomo
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mihomo
+spec:
+  selector:
+    app: mihomo
+  ports:
+  - port: 7890
+    targetPort: proxy
+    name: proxy
+  - port: 80
+    targetPort: dashboard
+    name: dashboard

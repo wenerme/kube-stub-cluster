@@ -24,7 +24,7 @@ spec:
         - -c
         - |
           set -ex
-
+          # resolve service to service IP
           SNI=$(dig +short sni-proxy.dev-system.svc.cluster.local)
 
           cat <<EOF > /etc/dnsmasq.conf

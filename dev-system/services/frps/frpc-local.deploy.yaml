@@ -16,8 +16,12 @@ spec:
     spec:
       containers:
       - name: frpc-local
-        image: local/frpc:0.51.0
+        image: local/frpc:0.53.2
         imagePullPolicy: IfNotPresent
+        command:
+        - frpc
+        - -c
+        - /etc/frp/frpc.toml
         ports:
         - containerPort: 22
           name: ssh
@@ -41,9 +45,8 @@ spec:
             # frpc_name, frpc_sk, frps_server_addr, frps_token
             name: frpc-local-env
         volumeMounts:
-        - mountPath: /etc/frp/frpc.ini
+        - mountPath: /etc/frp/
           name: conf
-          subPath: frpc.ini
       volumes:
       - name: conf
         configMap:
@@ -86,36 +89,44 @@ metadata:
   labels:
     app: frpc-local
 data:
-  frpc.ini: |
-    [common]
-    server_addr = {{.Envs.frps_server_addr}}
-    token = {{.Envs.frps_token}}
-    server_port = 443
-    protocol = wss
+  frpc.toml: |
+    serverAddr = "{{.Envs.frps_server_addr}}"
+    token = "{{.Envs.frps_token}}"
+    serverPort = 443
+    protocol = "wss"
 
-    admin_addr = 0.0.0.0
-    admin_port = 7400
-    admin_user = admin
-    admin_pwd = admin
+    webServer.addr = "0.0.0.0"
+    webServer.port = 7400
+    webServer.user = "admin"
+    webServer.password = "admin"
 
-    use_encryption = true
-    use_compression = true
+    transport.useEncryption = true
+    transport.useCompression = true
 
-    [{{.Envs.frpc_name}}.ssh]
-    type = stcp
-    sk = {{.Envs.frpc_sk}}
-    local_ip = {{.Envs.HOST_IP}}
-    local_port = 22
-    server_name = {{.Envs.frpc_name}}.ssh
-    [{{.Envs.frpc_name}}.http]
-    type = stcp
-    sk = {{.Envs.frpc_sk}}
-    local_ip = haproxytech-ingress.haproxy-controller
-    local_port = 80
-    server_name = {{.Envs.frpc_name}}.http
-    [{{.Envs.frpc_name}}.https]
-    type = stcp
-    sk = {{.Envs.frpc_sk}}
-    local_ip = haproxytech-ingress.haproxy-controller
-    local_port = 443
-    server_name = {{.Envs.frpc_name}}.https
+    [[proxies]]
+    name = "{{.Envs.frpc_name}}.ssh"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    localIP = "{{.Envs.HOST_IP}}"
+    localPort = 22
+
+    [[proxies]]
+    name = "{{.Envs.frpc_name}}.http"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    localIP = "haproxytech-ingress.haproxy-controller"
+    localPort = 80
+
+    [[proxies]]
+    name = "{{.Envs.frpc_name}}.https"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    localIP = "haproxytech-ingress.haproxy-controller"
+    localPort = 443
+
+    [[proxies]]
+    name = "{{.Envs.frpc_name}}.prometheus"
+    type = "stcp"
+    secretKey = "{{.Envs.frpc_sk}}"
+    localIP = "prometheus-service.monitoring"
+    localPort = 9090

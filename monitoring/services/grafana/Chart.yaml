@@ -3,5 +3,5 @@ apiVersion: v2
 version: 1.0.0
 dependencies:
 - name: grafana
-  version: 6.57.3
-  repository: https://charts.wener.tech
+  version: 7.0.19
+  repository: oci://registry-1.docker.io/wcharts

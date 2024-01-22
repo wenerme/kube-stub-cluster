@@ -13,3 +13,8 @@ grafana:
   - grafana-polystat-panel
   podAnnotations:
     reloader.stakater.com/auto: 'true'
+  grafana.ini:
+    server:
+    # root_url: https://monitor.example.com
+  env:
+  # https_proxy: 'http://proxy.dev-system:1080'
