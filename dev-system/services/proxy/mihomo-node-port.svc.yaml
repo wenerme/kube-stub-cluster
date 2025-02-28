@@ -1,18 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: proxy
+  name: mihomo-node-port
   labels:
-    app: clash
+    app: mihomo
   annotations:
     service.kubernetes.io/topology-mode: Auto
 spec:
   selector:
-    app: clash
+    app: mihomo
+  type: NodePort
   ports:
-  - port: 1080
-    targetPort: proxy
-    name: proxy
   - port: 7890
     targetPort: proxy
-    name: proxy-alt
+    name: proxy
+    nodePort: 30789

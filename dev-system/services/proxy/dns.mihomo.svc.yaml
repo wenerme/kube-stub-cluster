@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dns
+spec:
+  selector:
+    app: mihomo
+  ports:
+  - protocol: UDP
+    port: 53
+    name: dns
+  - protocol: TCP
+    port: 53
+    name: dns-tcp
+  clusterIP: 10.43.0.153

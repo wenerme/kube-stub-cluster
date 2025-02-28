@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: mihomo
-        image: wener/mihomo:compatible
+        image: quay.io/wener/mihomo:1.19.1-compatible
         imagePullPolicy: Always
         command:
         - mihomo
@@ -42,7 +42,7 @@ spec:
       volumes:
       - name: etc
         secret:
-          secretName: mihomo-etc
+          secretName: mihomo-config
       - name: config
         hostPath:
           path: /data/ns/dev-system/mihomo/config
@@ -67,3 +67,7 @@ spec:
   - port: 80
     targetPort: dashboard
     name: dashboard
+  - port: 53
+    targetPort: dns
+    name: dns
+    protocol: UDP

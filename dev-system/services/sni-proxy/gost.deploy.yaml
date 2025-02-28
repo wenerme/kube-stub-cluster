@@ -23,7 +23,7 @@ spec:
         - gost
         - -L=sni://:80
         - -L=sni://:443
-        - -F=socks5://clash:7890
+        - -F=socks5://proxy:1080
         ports:
         - containerPort: 80
           name: http
