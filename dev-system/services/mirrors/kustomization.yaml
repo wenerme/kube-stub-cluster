@@ -7,3 +7,4 @@ resources:
 - ghcr.yaml
 - gcr.yaml
 - quaycr.yaml
+- dockercr.yaml

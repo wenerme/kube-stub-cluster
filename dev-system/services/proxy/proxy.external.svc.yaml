@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+spec:
+  ports:
+  - port: 1080
+    name: proxy
+    targetPort: proxy
+  - port: 7890
+    name: proxy-alt
+    targetPort: proxy-alt
+  clusterIP: None
+
+---
+
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: proxy
+subsets:
+- addresses:
+  - ip: 10.10.0.1
+  ports:
+  - port: 1080
+    name: proxy
+  - port: 7890
+    name: proxy-alt

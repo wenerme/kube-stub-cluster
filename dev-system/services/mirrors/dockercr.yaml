@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: dockercr
-        image: registry:2.8.1
+        image: registry:2.8.3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
@@ -26,14 +26,16 @@ spec:
             port: registry
             path: /v2/
         env:
+        - name: https_proxy
+          value: proxy:1080
         - name: REGISTRY_PROXY_REMOTEURL
-          value: https://registry.k3s.io
+          value: https://registry-1.docker.io
         - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
           value: /var/lib/registry
         - name: REGISTRY_HTTP_ADDR
           value: :5000
         - name: REGISTRY_HTTP_HOST
-          value: https://dockercr.example.com
+          value: https://dockercr.dev.zhensi.tech
         - name: REGISTRY_HTTP_DEBUG_ADDR
           value: :5001
         - name: REGISTRY_HTTP_DEBUG_PROMETHEUS_ENABLED

@@ -1,6 +1,9 @@
 # 镜像
+
 - 常见仓库镜像
 - 建议 dockercr 在外部做，因为 k8s/k3s bootstrap 需要用
+- 区分 Docker Registry 和 Docker Registry Mirror
+  - Docker Registry 不配置 Remote 是允许 Push 的
 
 ---
 

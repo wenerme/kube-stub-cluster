@@ -49,6 +49,7 @@ spec:
       #  options:
       #  - name: ndots
       #    value: "5"
+      # Point to Internal GW to reduce Network
       #hostAliases:
       #- hostnames:
       #  - code.example.com

@@ -12,6 +12,7 @@ spec:
       labels:
         app: docker-registry
     spec:
+      dnsPolicy: None
       dnsConfig:
         nameservers:
         - 10.43.0.153
@@ -28,6 +29,7 @@ spec:
           httpGet:
             port: registry
             path: /v2/
+          initialDelaySeconds: 180
         # https://docs.docker.com/registry/deploying/
         # https://docs.docker.com/registry/configuration/
         # REGISTRY_HTTP_TLS_CERTIFICATE
@@ -50,6 +52,10 @@ spec:
           value: :5001
         - name: REGISTRY_HTTP_DEBUG_PROMETHEUS_ENABLED
           value: "true"
+        envFrom:
+        - secretRef:
+            # for REGISTRY_PROXY_USERNAME REGISTRY_PROXY_PASSWORD to avoid rate limit
+            name: docker-registry-env
         volumeMounts:
         - mountPath: /var/lib/registry
           name: data

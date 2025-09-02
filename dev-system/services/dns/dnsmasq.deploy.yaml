@@ -15,37 +15,117 @@ spec:
       labels:
         app: dnsmasq
     spec:
+      enableServiceLinks: false
       containers:
       - name: dnsmasq
-        image: wener/dnsmasq
+        image: quay.io/wener/dnsmasq
         imagePullPolicy: Always
         command:
         - sh
         - -c
         - |
           set -ex
-          # resolve service to service IP
+
           SNI=$(dig +short sni-proxy.dev-system.svc.cluster.local)
+          KUBE_DNS=$(dig +short kube-dns.kube-system.svc.cluster.local)
 
           cat <<EOF > /etc/dnsmasq.conf
           log-queries
           local-service
           conf-dir=/etc/dnsmasq.d/,*.conf
 
-          address=/docker.io/$SNI
-          address=/docker.com/$SNI
-          address=/npmjs.org/$SNI
-          address=/golang.org/$SNI
-          address=/quay.io/$SNI
-          address=/google.com/$SNI
-          address=/googleapis.com/$SNI
+          server=/cluster.local/$KUBE_DNS
 
           # internal network
           # address=/wener.me/127.0.0.1
           EOF
 
+          echo "$GFWLIST_LIST_TXT" | while read -r line; do
+              echo "address=/$line/$SNI" >> /etc/dnsmasq.conf;
+          done
+
           dnsmasq --test
           dnsmasq -d -C /etc/dnsmasq.conf
+        env:
+        - name: GFWLIST_LIST_TXT
+          # https://raw.githubusercontent.com/wenerme/wener/master/notes/service/dns/gfwlist.dev.txt
+          value: |
+            acme-dns.io
+            akamai.net
+            akamaihd.net
+            alpinelinux.org
+            amazonaws.com
+            anaconda.com
+            anaconda.org
+            annas-archive.org
+            azure.com
+            berkeley.edu
+            bitbucket.org
+            bootstrapcdn.com
+            cdnjs.com
+            chatgpt.com
+            cloudflare.com
+            cloudfront.net
+            cmu.edu
+            codecov.io
+            composer.org
+            conda-forge.org
+            continuum.io
+            crates.io
+            docker.com
+            docker.io
+            fastly.net
+            fbaipublicfiles.com
+            fbcdn.net
+            gcr.io
+            ghcr.io
+            github.com
+            github.dev
+            github.io
+            githubassets.com
+            githubcopilot.com
+            githubusercontent.com
+            gitlab.com
+            golang.org
+            google.com
+            googleapis.com
+            gstatic.com
+            harvard.edu
+            huggingface.co
+            jetbrains.com
+            jitpack.io
+            jsdelivr.net
+            letsencrypt.org
+            maven.org
+            netlify.com
+            nodejs.org
+            npmjs.com
+            npmjs.org
+            nuget.org
+            oaistatic.com
+            oaiusercontent.com
+            onion
+            openai.com
+            openai.io
+            packagist.org
+            php.net
+            pypi.org
+            python.org
+            pythonhosted.org
+            quay.io
+            rubygems.org
+            rust-lang.org
+            rustup.rs
+            sourceforge.net
+            terraform.io
+            toolbox.app
+            torproject.org
+            uber.org
+            unpkg.com
+            visualstudio.com
+            windows.net
+            yarnpkg.com
+
         ports:
         - containerPort: 53
           name: dns

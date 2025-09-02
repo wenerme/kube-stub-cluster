@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: registry
-        image: registry:2.8.1
+        image: registry:2.8.3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 5000
@@ -27,7 +27,7 @@ spec:
             path: /v2/
         env:
         - name: https_proxy
-          value: clash:7890
+          value: proxy:1080
         - name: REGISTRY_PROXY_REMOTEURL
           value: https://registry.k8s.io
         - name: REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY
