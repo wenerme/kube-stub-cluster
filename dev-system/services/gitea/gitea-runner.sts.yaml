@@ -36,10 +36,19 @@ spec:
         app: gitea-runner
     spec:
       enableServiceLinks: false
+      #dnsPolicy: None
+      # for GFW
       #dnsConfig:
       #  nameservers:
-      #  - 10.43.0.153
-      # go has problem with dns search, use dnsPolicy none will not resolve gitea
+      #  - 10.43.0.153 # SNI Proxy DNS
+      #  - 10.43.0.10 # Internal DNS
+      #  searches:
+      #  - dev-system.svc.cluster.local
+      #  - svc.cluster.local
+      #  - cluster.local
+      #  options:
+      #  - name: ndots
+      #    value: "5"
       #hostAliases:
       #- hostnames:
       #  - code.example.com
